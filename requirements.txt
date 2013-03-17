@@ -1,0 +1,7 @@
+Flask
+Flask-WTF
+Flask-Admin
+#Flask-Login
+SQLAlchemy
+Flask-SQLAlchemy
+xlrd
