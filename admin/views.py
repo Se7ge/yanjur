@@ -11,7 +11,13 @@ from admin.models import Connection_Type, Connection
 
 class Person_AliasAdmin(ModelView):
     column_labels = dict(person=u'Автор', name=u'Псевдоним')
-    column_sortable_list = ('person',)
 
     def __init__(self, session, **kwargs):
         super(Person_AliasAdmin, self).__init__(Person_Alias, session, **kwargs)
+
+
+class Work_CategoriesAdmin(ModelView):
+    column_labels = dict(name=u'Название сборника', code=u'Код сборника(?)')
+
+    def __init__(self, session, **kwargs):
+        super(Work_CategoriesAdmin, self).__init__(Work_Categories, session, **kwargs)
