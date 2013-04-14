@@ -75,6 +75,7 @@ class Person_Alias(Base):
     id = Column(Integer, primary_key=True)
     person_id = Column(Integer, ForeignKey(Person.id), doc='Link to person', nullable=False)
     name = Column(Unicode(50), nullable=False)
+    person = relationship(Person)
 
 
 class Connection_Type(Base):
