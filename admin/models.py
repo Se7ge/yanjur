@@ -87,6 +87,15 @@ class Connection_Type(Base):
     name = Column(Unicode(50), nullable=False)
 
 
+class Work_Time(Base):
+    """Mapping for Work_Time table"""
+    __tablename__ = 'work_time'
+    __table_args__ = {'mysql_engine': 'InnoDB'}
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(50), nullable=False)
+
+
 class Work_Person(Base):
     """Mapping for Work_Person table"""
     __tablename__ = 'work_person'
@@ -96,9 +105,9 @@ class Work_Person(Base):
     work_id = Column(Integer, ForeignKey(Work.id), nullable=False)
     person_id = Column(Integer, ForeignKey(Person.id), nullable=False)
     action_id = Column(Integer, ForeignKey(Action.id))
-    title_id = Column(Integer, ForeignKey(Title.id))
-    place_id = Column(Integer, ForeignKey(Place.id))
-    time = Column(Unicode(50))
+    title_id = Column(Integer, ForeignKey(Title.id)) // M.B. MANY
+    place_id = Column(Integer, ForeignKey(Place.id)) // M.B. MANY
+    time_id = Column(Integer, ForeignKey(Work_Time.id))
 
 
 class Connection(Base):
