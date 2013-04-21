@@ -29,6 +29,7 @@ class Work(Base):
     location = Column(Unicode(50))
     colophon = Column(UnicodeText)
     concordance = Column(Unicode(50))
+    concordance_work_id = Column(Integer, ForeignKey('work.id'), doc='Link to work', nullable=True)
 
 
 class Action(Base):
@@ -73,7 +74,7 @@ class Person_Alias(Base):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     id = Column(Integer, primary_key=True)
-    person_id = Column(Integer, ForeignKey(Person.id), doc='Link to person', nullable=False)
+    person_id = Column(Integer, ForeignKey(Person.id), doc='Link to person')
     name = Column(Unicode(50), nullable=False)
     person = relationship(Person)
 
@@ -104,10 +105,26 @@ class Work_Person(Base):
     id = Column(Integer, primary_key=True)
     work_id = Column(Integer, ForeignKey(Work.id), nullable=False)
     person_id = Column(Integer, ForeignKey(Person.id), nullable=False)
-    action_id = Column(Integer, ForeignKey(Action.id))
-    title_id = Column(Integer, ForeignKey(Title.id)) // M.B. MANY
-    place_id = Column(Integer, ForeignKey(Place.id)) // M.B. MANY
+    place_id = Column(Integer, ForeignKey(Place.id))
     time_id = Column(Integer, ForeignKey(Work_Time.id))
+
+
+class Work_Person_Titles(Base):
+    """Mapping for Work_Person_Titles table"""
+    __tablename__ = 'work_person_titles'
+    __table_args__ = {'mysql_engine': 'InnoDB'}
+
+    work_person_id = Column(Integer, ForeignKey(Work_Person.id))
+    title_id = Column(Integer, ForeignKey(Title.id))
+
+
+class Work_Person_Actions(Base):
+    """Mapping for Work_Person_Actions table"""
+    __tablename__ = 'work_person_actions'
+    __table_args__ = {'mysql_engine': 'InnoDB'}
+
+    work_person_id = Column(Integer, ForeignKey(Work_Person.id))
+    action_id = Column(Integer, ForeignKey(Action.id))
 
 
 class Connection(Base):
@@ -119,4 +136,12 @@ class Connection(Base):
     work_person_id = Column(Integer, ForeignKey(Work_Person.id), nullable=False)
     connect_type_id = Column(Integer, ForeignKey(Connection_Type.id), nullable=False)
     person_id = Column(Integer, ForeignKey(Person.id), nullable=False)
+
+
+class Connection_Titles(Base):
+    """Mapping for Work_Person_Titles table"""
+    __tablename__ = 'connection_titles'
+    __table_args__ = {'mysql_engine': 'InnoDB'}
+
+    connection_id = Column(Integer, ForeignKey(Connection.id))
     title_id = Column(Integer, ForeignKey(Title.id))
