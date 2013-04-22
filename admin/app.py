@@ -24,8 +24,15 @@ def get_locale():
 
     return session.get('lang', 'ru')
 
-admin.add_view(views.Person_AliasAdmin(Session, name=u'Псевдонимы авторов'))
-admin.add_view(views.Work_CategoriesAdmin(Session, name=u'Сборники'))
+admin.add_view(views.Work_Admin(Session, name=u'Сочинения'))
+admin.add_view(views.Person_Admin(Session, name=u'Авторы', category=u'Авторы'))
+admin.add_view(views.Person_AliasAdmin(Session, name=u'Псевдонимы авторов', category=u'Авторы'))
+admin.add_view(views.ActionsAdmin(Session, name=u'Действия', category=u'Справочники'))
+admin.add_view(views.PlaceAdmin(Session, name=u'Местоположения', category=u'Справочники'))
+admin.add_view(views.Work_TimeAdmin(Session, name=u'Периоды времени', category=u'Справочники'))
+admin.add_view(views.Work_CategoriesAdmin(Session, name=u'Сборники', category=u'Справочники'))
+admin.add_view(views.Connection_TypeAdmin(Session, name=u'Типы сотрудничества', category=u'Справочники'))
+admin.add_view(views.TitlesAdmin(Session, name=u'Титулы', category=u'Справочники'))
 
 
 @app.teardown_request

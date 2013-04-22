@@ -16,6 +16,9 @@ class Work_Categories(Base):
     name = Column(UnicodeText, nullable=False)
     code = Column(UnicodeText, nullable=True)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Work(Base):
     """Mapping for Work table"""
@@ -30,6 +33,7 @@ class Work(Base):
     colophon = Column(UnicodeText)
     concordance = Column(Unicode(50))
     concordance_work_id = Column(Integer, ForeignKey('work.id'), doc='Link to work', nullable=True)
+    category = relationship(Work_Categories)
 
 
 class Action(Base):
@@ -67,6 +71,8 @@ class Person(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(50), nullable=False)
 
+    def __unicode__(self):
+        return self.name
 
 class Person_Alias(Base):
     """Mapping for Person_Alias table"""
