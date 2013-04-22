@@ -25,7 +25,7 @@ def get_locale():
     return session.get('lang', 'ru')
 
 admin.add_view(views.Person_AliasAdmin(Session, name=u'Псевдонимы авторов'))
-admin.add_view(views.Work_Categories(Session, name=u'Сборники'))
+admin.add_view(views.Work_CategoriesAdmin(Session, name=u'Сборники'))
 
 
 @app.teardown_request

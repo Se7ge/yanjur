@@ -46,7 +46,7 @@ def _get_object(_class, column, value):
 
 
 def _add_object(_class, column, value):
-    obj = object.__new__(_class)
+    obj = _class()
     setattr(obj, column, value.strip())
     session.add(obj)
     session.commit()
@@ -56,20 +56,20 @@ def _add_object(_class, column, value):
 def _add_work(data_row):
     objects = dict()
     object_id = None
-    setattr(objects[Work.__name__], 'category_id', WORK_CATEGORY)
     for i in range(len(WORK_COLUMNS)):
-        if data_row[i]:
+        if data_row[i].value:
             table_name = WORK_COLUMNS[i]['table'].__name__
             if i == 0 and table_name == Work.__name__:
-                work_obj = _get_work(data_row[i])
+                work_obj = _get_work(data_row[i].value)
                 if work_obj:
                     objects[table_name] = work_obj
             if table_name not in objects:
-                objects[table_name] = object.__new__(WORK_COLUMNS[i]['table'])
-            setattr(objects[table_name], WORK_COLUMNS[i]['column'], data_row[i].strip())
+                objects[table_name] = WORK_COLUMNS[i]['table']()
+            setattr(objects[table_name], WORK_COLUMNS[i]['column'], data_row[i].value.strip())
+    setattr(objects[Work.__name__], 'category_id', WORK_CATEGORY)
     if objects:
         for obj in objects.values():
-            if not hasattr(obj, 'id'):
+            if not getattr(obj, 'id', None):
                 session.add(obj)
             session.commit()
             object_id = obj.id
@@ -86,18 +86,23 @@ def __process_field(table, field, value):
 
 def _clear_person_work(work_id):
     for work_person in session.query(Work_Person).filter(Work_Person.work_id == work_id).all():
+        _clear_connection(work_person.id)
         session.query(Work_Person_Actions).filter(Work_Person_Actions.work_person_id == work_person.id).delete()
         session.query(Work_Person_Titles).filter(Work_Person_Titles.work_person_id == work_person.id).delete()
-        work_person.delete()
+        session.delete(work_person)
 
 
 def _add_author(work_id, data_row):
+    if data_row[len(WORK_COLUMNS)].value == 'Name':
+        return None
     fields = dict()
     for i in range(len(WORK_COLUMNS), len(WORK_COLUMNS) + len(AUTHOR_COLUMNS)):
         k = i - len(WORK_COLUMNS)
-        if data_row[i]:
-            if AUTHOR_COLUMNS[k]['multiple'] and data_row[i]:
-                values = data_row[i].split(';')
+        if data_row[i].value:
+            if not AUTHOR_COLUMNS[k]['link_table'].__name__ in fields:
+                fields[AUTHOR_COLUMNS[k]['link_table'].__name__] = dict()
+            if AUTHOR_COLUMNS[k]['multiple']:
+                values = data_row[i].value.split(';')
                 if values:
                     fields[AUTHOR_COLUMNS[k]['link_table'].__name__][AUTHOR_COLUMNS[k]['link_column']] = list()
                     for value in values:
@@ -106,11 +111,10 @@ def _add_author(work_id, data_row):
                             (fields[AUTHOR_COLUMNS[k]['link_table'].__name__][AUTHOR_COLUMNS[k]['link_column']]
                              .append(_object.id))
             else:
-                _object = __process_field(AUTHOR_COLUMNS[k]['table'], 'name', data_row[i])
+                _object = __process_field(AUTHOR_COLUMNS[k]['table'], 'name', data_row[i].value)
                 if _object:
                     fields[AUTHOR_COLUMNS[k]['link_table'].__name__][AUTHOR_COLUMNS[k]['link_column']] = _object.id
     if fields:
-        _clear_person_work(work_id)
         work_person = None
         if fields[Work_Person.__name__]:
             fields[Work_Person.__name__]['work_id'] = work_id
@@ -121,37 +125,40 @@ def _add_author(work_id, data_row):
         if work_person and fields:
             for key, value in fields.items():
                 if isinstance(value, dict):
-                    for k, v in value:
+                    for k, v in value.items():
                         if isinstance(v, list):
                             for el_id in v:
-                                _obj = object.__new__(key)
+                                _obj = globals()[key]()
                                 setattr(_obj, k, el_id)
                                 setattr(_obj, 'work_person_id', work_person.id)
                                 session.add(_obj)
                                 session.commit()
                         else:
-                            _obj = object.__new__(key)
+                            _obj = globals()[key]()
                             setattr(_obj, k, v)
                             setattr(_obj, 'work_person_id', work_person.id)
                             session.add(_obj)
                             session.commit()
+            return work_person.id
 
 
 def _clear_connection(work_person_id):
     for connection in session.query(Connection).filter(Connection.work_person_id == work_person_id).all():
         session.query(Connection_Titles).filter(Connection_Titles.connection_id == connection.id).delete()
-        connection.delete()
+        session.delete(connection)
 
 
 def __add_connection(work_person_id, connection):
     fields = dict()
     if connection:
-        for k, v in connection:
-            if not v:
+        for k, v in enumerate(connection):
+            if not v.value:
                 return None
-            obj = __process_field(CONNECTION_COLUMNS[k]['table'], 'name', v)
+            obj = __process_field(CONNECTION_COLUMNS[k]['table'], 'name', v.value)
+            if not CONNECTION_COLUMNS[k]['link_table'].__name__ in fields:
+                fields[CONNECTION_COLUMNS[k]['link_table'].__name__] = dict()
             if CONNECTION_COLUMNS[k]['multiple']:
-                values = v.split(';')
+                values = v.value.split(';')
                 if values:
                     fields[CONNECTION_COLUMNS[k]['link_table'].__name__][CONNECTION_COLUMNS[k]['link_column']] = list()
                     for value in values:
@@ -174,16 +181,16 @@ def __add_connection(work_person_id, connection):
         if connection and fields:
             for key, value in fields.items():
                 if isinstance(value, dict):
-                    for k, v in value:
+                    for k, v in value.items():
                         if isinstance(v, list):
                             for el_id in v:
-                                _obj = object.__new__(key)
+                                _obj = globals()[key]()
                                 setattr(_obj, k, el_id)
                                 setattr(_obj, 'connection_id', connection.id)
                                 session.add(_obj)
                                 session.commit()
                         else:
-                            _obj = object.__new__(key)
+                            _obj = globals()[key]()
                             setattr(_obj, k, v)
                             setattr(_obj, 'connection_id', connection.id)
                             session.add(_obj)
@@ -198,12 +205,14 @@ def _add_connections(work_person_id, data_row):
 
 def add_data(sheet):
     work_id = None
+    work_person_id = None
     for row in range(sheet.nrows):
         if row == 0:
             continue
         if sheet.cell(row, 0).value != '':
             work_id = _add_work(sheet.row(row))
-        elif work_id:
+            _clear_person_work(work_id)
+        if work_id:
             work_person_id = _add_author(work_id, sheet.row(row))
             if work_person_id:
                 _add_connections(work_person_id, sheet.row(row))
@@ -211,15 +220,15 @@ def add_data(sheet):
 
 def _add_alias(data_row):
     person_id = None
-    for k, v in data_row:
+    for k, v in enumerate(data_row):
         if not v:
             continue
         if k == 0:
-            obj = __process_field(Person, 'name', v)
+            obj = __process_field(Person, 'name', v.value)
             person_id = obj.id
-        elif person_id:
-            obj = __process_field(Person_Alias, 'name', v)
-            obj.person_id = obj.id
+        elif person_id and v.value:
+            obj = __process_field(Person_Alias, 'name', v.value)
+            obj.person_id = person_id
             session.commit()
 
 

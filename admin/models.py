@@ -14,7 +14,7 @@ class Work_Categories(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(UnicodeText, nullable=False)
-    code = Column(UnicodeText, nullable=False)
+    code = Column(UnicodeText, nullable=True)
 
 
 class Work(Base):
@@ -114,8 +114,8 @@ class Work_Person_Titles(Base):
     __tablename__ = 'work_person_titles'
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
-    work_person_id = Column(Integer, ForeignKey(Work_Person.id))
-    title_id = Column(Integer, ForeignKey(Title.id))
+    work_person_id = Column(Integer, ForeignKey(Work_Person.id), primary_key=True)
+    title_id = Column(Integer, ForeignKey(Title.id), primary_key=True)
 
 
 class Work_Person_Actions(Base):
@@ -123,8 +123,8 @@ class Work_Person_Actions(Base):
     __tablename__ = 'work_person_actions'
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
-    work_person_id = Column(Integer, ForeignKey(Work_Person.id))
-    action_id = Column(Integer, ForeignKey(Action.id))
+    work_person_id = Column(Integer, ForeignKey(Work_Person.id), primary_key=True)
+    action_id = Column(Integer, ForeignKey(Action.id), primary_key=True)
 
 
 class Connection(Base):
@@ -143,5 +143,5 @@ class Connection_Titles(Base):
     __tablename__ = 'connection_titles'
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
-    connection_id = Column(Integer, ForeignKey(Connection.id))
-    title_id = Column(Integer, ForeignKey(Title.id))
+    connection_id = Column(Integer, ForeignKey(Connection.id), primary_key=True)
+    title_id = Column(Integer, ForeignKey(Title.id), primary_key=True)
