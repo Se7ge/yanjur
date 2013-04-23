@@ -4,7 +4,7 @@ DB_PORT = 3306
 DB_USER = 'root'
 DB_PASSWORD = ''
 DB_NAME = 'soap'
-
+UPLOAD_FOLDER = '/path/to/the/uploads'
 
 FLASK_SECRET_KEY = ''
 

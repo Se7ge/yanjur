@@ -1,0 +1,32 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<h3>Загрузить Excel-файл</h3>
+{% if msg %}<div id="result" class="alert alert-error">{{ msg }}</div>{% endif %}
+<form id="update_form" class="form-horizontal" method="POST" enctype="multipart/form-data">
+    <div class="control-group">
+        <div class="control-label">Сборник</div>
+        <div class="controls">
+            <div>
+                <select name="category" id="category" data-role="select2blank" autofocus="autofocus">
+                    <option value="0">- выберите сборник -</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">Файл</div>
+        <div class="controls">
+            <div><input type="file" name="file"></div>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <input type="submit" name="do_update" class="btn btn-primary" value="Загрузить">
+            <a href="/admin/" class="btn">Отмена</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -33,6 +33,7 @@ admin.add_view(views.Work_TimeAdmin(Session, name=u'Периоды времен�
 admin.add_view(views.Work_CategoriesAdmin(Session, name=u'Сборники', category=u'Справочники'))
 admin.add_view(views.Connection_TypeAdmin(Session, name=u'Типы сотрудничества', category=u'Справочники'))
 admin.add_view(views.TitlesAdmin(Session, name=u'Титулы', category=u'Справочники'))
+admin.add_view(views.UploadAdmin(name=u'Загрузка данных'))
 
 
 @app.teardown_request
