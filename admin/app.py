@@ -24,6 +24,7 @@ def get_locale():
 
     return session.get('lang', 'ru')
 
+admin.add_view(views.Pages_Admin(Session, name=u'Статьи'))
 admin.add_view(views.Work_Admin(Session, name=u'Сочинения'))
 admin.add_view(views.Person_Admin(Session, name=u'Авторы', category=u'Авторы'))
 admin.add_view(views.Person_AliasAdmin(Session, name=u'Псевдонимы авторов', category=u'Авторы'))

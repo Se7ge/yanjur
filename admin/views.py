@@ -8,8 +8,9 @@ from wtforms.fields import SelectField, BooleanField, FileField
 from admin.database import Session
 from werkzeug import secure_filename
 
-from admin.models import Action, Person, Person_Alias, Place, Work_Categories, Work_Person, Work, Title
+from admin.models import Action, Person, Person_Alias, Place, Work_Categories, Work_Person, Work, Title, Pages
 from admin.models import Connection_Type, Connection, Work_Time
+from admin.ckedit import CKTextAreaField
 from settings import UPLOAD_FOLDER
 from parser import parse_sheet
 
@@ -79,6 +80,18 @@ class Work_TimeAdmin(ModelView):
 
     def __init__(self, session, **kwargs):
         super(Work_TimeAdmin, self).__init__(Work_Time, session, **kwargs)
+
+
+class Pages_Admin(ModelView):
+    column_labels = dict(title=u'Заголовок', text=u'Текст статьи', url=u'URL-адрес страницы')
+    column_list = ('title', 'url')
+    form_overrides = dict(text=CKTextAreaField)
+
+    create_template = 'create.html'
+    edit_template = 'edit.html'
+
+    def __init__(self, session, **kwargs):
+        super(Pages_Admin, self).__init__(Pages, session, **kwargs)
 
 
 def allowed_file(filename):

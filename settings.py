@@ -11,3 +11,4 @@ FLASK_SECRET_KEY = ''
 from settings_local import *
 
 DB_CONNECT_STRING = 'mysql://%s:%s@%s:%s/%s?charset=utf8' % (DB_USER , DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
+# DB_CONNECT_STRING = 'mysql://%s:%s@%s:%s/%s?charset=utf8&init_command=set%20names%20%22utf8%22' % (DB_USER , DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
