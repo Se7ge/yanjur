@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>{{ article.title }}</h2>
-    <p>{{ article.text }}</p>
+    <legend><h2>{{ article.title }}</h2></legend>
+    <p>{{ article.text|safe }}</p>
 {% endblock %}

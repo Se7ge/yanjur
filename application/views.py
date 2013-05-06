@@ -10,7 +10,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/page/<url>')
+@app.route('/page/<url>/')
 def show_article(url):
     page = Session().query(Pages).filter(Pages.url == url).first()
     if page:

@@ -2,7 +2,7 @@
 from flask import Flask
 app = Flask(__name__)
 
-import views
+from application.views import *
 
 
 if __name__ == '__main__':
