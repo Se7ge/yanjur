@@ -55,7 +55,7 @@
       {% include '_footer.html' %}
     </div><!--/.fluid-container-->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../static/js/jquery-1.9.1.min.js"></script>
-    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery-1.9.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
   </body>
 </html>
