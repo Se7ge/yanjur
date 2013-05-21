@@ -9,12 +9,12 @@ session = Session()
 
 @app.context_processor
 def sidebar_menu():
-    works = session.query(Work).order_by('number')
-    persons = session.query(Person).order_by('name')
-    titles = session.query(Title).order_by('name')
-    actions = session.query(Action).order_by('name')
-    places = session.query(Place).order_by('name')
-    times = session.query(Work_Time).order_by('name')
+    works = session.query(Work).order_by('number').count()
+    persons = session.query(Person).order_by('name').count()
+    titles = session.query(Title).order_by('name').count()
+    actions = session.query(Action).order_by('name').count()
+    places = session.query(Place).order_by('name').count()
+    times = session.query(Work_Time).order_by('name').count()
     return dict(works=works,
                 persons=persons,
                 titles=titles,

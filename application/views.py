@@ -7,6 +7,7 @@ from application.context_processors import sidebar_menu
 
 
 session = Session()
+ENTITIES = dict(works=Work, persons=Person, titles=Title, actions=Action, places=Place, times=Work_Time)
 
 
 @app.route('/')
@@ -23,6 +24,15 @@ def show_article(url):
         abort(404)
 
 
+@app.route('/<name>/')
+def entity_list(name):
+    order_by = 'name'
+    if name == 'works':
+        order_by = 'number'
+    data = session.query(ENTITIES[name]).order_by(order_by)
+    return render_template('%s/entity_list.html' % name, data=data)
+
+
 @app.route('/work/<int:id>.html')
 def work(id):
     work = session.query(Work).get(id)
@@ -36,7 +46,7 @@ def work(id):
 def person(id):
     person = session.query(Person).get(id)
     if person:
-        return render_template('entity.html', entity='person', entity_id=id, data=person)
+        return render_template('persons/entity.html', entity='person', entity_id=id, data=person)
     else:
         abort(404)
 
@@ -45,25 +55,25 @@ def person(id):
 def title(id):
     title = session.query(Title).get(id)
     if title:
-        return render_template('entity.html', entity='title', entity_id=id, data=title)
+        return render_template('titles/entity.html', entity='title', entity_id=id, data=title)
     else:
         abort(404)
 
 
-@app.route('/work/<int:id>.html')
+@app.route('/action/<int:id>.html')
 def action(id):
     action = session.query(Action).get(id)
     if action:
-        return render_template('entity.html', entity='action', entity_id=id, data=action)
+        return render_template('actions/entity.html', entity='action', entity_id=id, data=action)
     else:
         abort(404)
 
 
-@app.route('/work/<int:id>.html')
+@app.route('/place/<int:id>.html')
 def place(id):
     place = session.query(Place).get(id)
     if place:
-        return render_template('entity.html', entity='place', entity_id=id, data=place)
+        return render_template('places/entity.html', entity='place', entity_id=id, data=place)
     else:
         abort(404)
 
@@ -72,9 +82,10 @@ def place(id):
 def time(id):
     time = session.query(Work_Time).get(id)
     if time:
-        return render_template('entity.html', entity='time', entity_id=id, data=time)
+        return render_template('times/entity.html', entity='time', entity_id=id, data=time)
     else:
         abort(404)
+
 
 @app.errorhandler(404)
 def page_not_found(e):

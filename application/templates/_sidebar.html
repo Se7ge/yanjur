@@ -3,40 +3,22 @@
   <div class="well sidebar-nav">
     <ul class="nav nav-list">
       {% if works %}
-      <li class="nav-header">Сочинения</li>
-      {% for work in works %}
-      <li{% if entity=='work' and entity_id==work.id %} class="active"{% endif %}><a href="{{ url_for('work', id=work.id) }}">{{ work.number }}</a></li>
-      {% endfor %}
+      <li{% if request.path==url_for('entity_list', name='works') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='works') }}">Индекс сочинений <span class="label label-important pull-right">{{ works }}</span></a></li>
       {% endif %}
       {% if persons %}
-      <li class="nav-header">Авторы</li>
-      {% for person in persons %}
-      <li{% if entity=='person' and entity_id==person.id %} class="active"{% endif %}><a href="{{ url_for('person', id=person.id) }}">{{ person.name }}</a></li>
-      {% endfor %}
+      <li{% if request.path==url_for('entity_list', name='persons') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='persons') }}">Индекс авторов <span class="label label-important pull-right">{{ persons }}</span></a></li>
       {% endif %}
-      {% if persons %}
-      <li class="nav-header">Титулы</li>
-      {% for title in titles %}
-      <li{% if entity=='title' and entity_id==title.id %} class="active"{% endif %}><a href="{{ url_for('title', id=title.id) }}">{{ title.name }}</a></li>
-      {% endfor %}
+      {% if titles %}
+      <li{% if request.path==url_for('entity_list', name='titles') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='titles') }}">Индекс титулов <span class="label label-important pull-right">{{ titles }}</span></a></li>
       {% endif %}
       {% if actions %}
-      <li class="nav-header">Действия</li>
-      {% for action in actions %}
-      <li{% if entity=='action' and entity_id==action.id %} class="active"{% endif %}><a href="{{ url_for('action', id=action.id) }}">{{ action.name }}</a></li>
-      {% endfor %}
+      <li{% if request.path==url_for('entity_list', name='actions') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='actions') }}">Индекс действий <span class="label label-important pull-right">{{ actions }}</span></a></li>
       {% endif %}
       {% if places %}
-      <li class="nav-header">Местоположения</li>
-      {% for place in places %}
-      <li{% if entity=='place' and entity_id==place.id %} class="active"{% endif %}><a href="{{ url_for('place', id=place.id) }}">{{ place.name }}</a></li>
-      {% endfor %}
+      <li{% if request.path==url_for('entity_list', name='places') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='places') }}">Индекс топонимов <span class="label label-important pull-right">{{ places }}</span></a></li>
       {% endif %}
       {% if times %}
-      <li class="nav-header">Время</li>
-      {% for time in times %}
-      <li{% if entity=='time' and entity_id==time.id %} class="active"{% endif %}><a href="{{ url_for('time', id=time.id) }}">{{ time.name }}</a></li>
-      {% endfor %}
+      <li{% if request.path==url_for('entity_list', name='times') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='times') }}">Индекс дат <span class="label label-important pull-right">{{ times }}</span></a></li>
       {% endif %}
     </ul>
   </div><!--/.well -->

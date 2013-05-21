@@ -4,12 +4,12 @@
       <div class="navbar-inner">
         <div class="container">
           <ul class="nav">
-            <li class="active"><a href="{{ url_for('show_article', url='about') }}" title="О проекте">О проекте</a></li>
-            <li><a href="{{ url_for('show_article', url='history') }}" title="История">История</a></li>
-            <li><a href="{{ url_for('show_article', url='bibliography') }}" title="Библиография">Библиография</a></li>
-            <li><a href="{{ url_for('show_article', url='symbols') }}" title="Условные обозначения">Условные обозначения</a></li>
-            <li><a href="{{ url_for('show_article', url='instruction') }}" title="Инструкция">Инструкция</a></li>
-            <li><a href="{{ url_for('show_article', url='contacts') }}" title="Контакты">Контакты</a></li>
+            <li{% if request.path==url_for('show_article', url='about') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='about') }}" title="О проекте">О проекте</a></li>
+            <li{% if request.path==url_for('show_article', url='history') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='history') }}" title="История">История</a></li>
+            <li{% if request.path==url_for('show_article', url='bibliography') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='bibliography') }}" title="Библиография">Библиография</a></li>
+            <li{% if request.path==url_for('show_article', url='symbols') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='symbols') }}" title="Условные обозначения">Условные обозначения</a></li>
+            <li{% if request.path==url_for('show_article', url='instruction') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='instruction') }}" title="Инструкция">Инструкция</a></li>
+            <li{% if request.path==url_for('show_article', url='contacts') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='contacts') }}" title="Контакты">Контакты</a></li>
           </ul>
         </div>
       </div>
