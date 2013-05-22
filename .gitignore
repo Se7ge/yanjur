@@ -2,4 +2,4 @@
 *.pyc
 *.pyo
 settings_local.py
-ckeditor
+ckeditor/samples
