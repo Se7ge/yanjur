@@ -7,10 +7,9 @@
     <div class="container-fluid">
       {% include '_top.html' %}
       <div class="row-fluid">
-          {% include '_sidebar.html' %}
             <div class="span9">
             {% block content %}
-              <div class="hero-unit" style="height:200px;background: #EEEEEE url('../static/img/Manjusri_Monastery.jpg') no-repeat center;">
+              <div class="hero-unit" style="height:200px;background: #EEEEEE url('../static/img/monastery.jpg') no-repeat center;">
                 <!--<h1>Hello, world!</h1>
                 <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
                 <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>-->
@@ -50,6 +49,9 @@
                 </div><!--/span-->
               </div><!--/row-->
             {% endblock %}
+            </div><!--/span-->
+            <div class="span3">
+                {% include '_sidebar.html' %}
             </div><!--/span-->
       </div><!--/row-->
       {% include '_footer.html' %}

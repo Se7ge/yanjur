@@ -90,3 +90,8 @@ def time(id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+
+@app.teardown_request
+def shutdown_session(exception=None):
+    Session.remove()
