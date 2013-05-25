@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
+from admin.database import Session
 from settings import DEBUG
+
 app = Flask(__name__)
 app.debug = DEBUG
 
