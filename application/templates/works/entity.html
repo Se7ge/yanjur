@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-    <legend><h2>{{ data.name }}</h2></legend>
-    <p>Здесь будет информация по сущности со связанными данными</p>
+    <legend><h3>{{ data.number }}</h3></legend>
+    <h4>{{ data.name }}</h4>
+    <p>{{ data.colophon }}</p>
+    <p>{{ data.location }}</p>
+    <p>{{ data.concordance }}</p>
 {% endblock %}

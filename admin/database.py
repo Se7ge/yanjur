@@ -6,8 +6,7 @@ from settings import DB_CONNECT_STRING
 
 engine = create_engine(DB_CONNECT_STRING, convert_unicode=True, encoding='utf8')
 Session = scoped_session(sessionmaker(bind=engine,
-                                      autocommit=False,
-                                      autoflush=False,))
+                                      autocommit=False))
 Base.query = Session.query_property()
 
 

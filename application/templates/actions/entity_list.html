@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-    <legend><h2>Индекс действий</h2></legend>
-    <ul class="nav nav-tabs nav-stacked">
+    <legend><h3>Индекс действий</h3></legend>
+    <ol>
     {% if data %}
         {% for item in data %}
         <li><a href="{{ url_for('action', id=item.id) }}">{{ item.name }}</a></li>
         {% endfor %}
     {% endif %}
-    </ul>
+    </ol>
 {% endblock %}

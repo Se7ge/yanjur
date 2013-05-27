@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-    <legend><h2>Страница в разработке</h2></legend>
-    <legend><h2>Добавить псевдонимы?</h2></legend>
-    <p>Здесь будет информация с перечнем сущностей</p>
+    <legend><h3>Индекс авторов</h3></legend>
+    <ol>
+    {% if data %}
+        {% for item in data %}
+        <li><a href="{{ url_for('person', id=item.id) }}">{{ item.name }}</a></li>
+        {% endfor %}
+    {% endif %}
+    </ol>
 {% endblock %}

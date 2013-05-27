@@ -32,6 +32,7 @@ class Work(Base):
     location = Column(Unicode(50))
     colophon = Column(UnicodeText)
     concordance = Column(Unicode(50))
+    #TODO: many-to-many
     concordance_work_id = Column(Integer, ForeignKey('work.id'), doc='Link to work', nullable=True)
     category = relationship(Work_Categories)
 
@@ -74,6 +75,7 @@ class Person(Base):
     def __unicode__(self):
         return self.name
 
+
 class Person_Alias(Base):
     """Mapping for Person_Alias table"""
     __tablename__ = 'person_alias'
@@ -113,6 +115,7 @@ class Work_Person(Base):
     person_id = Column(Integer, ForeignKey(Person.id), nullable=False)
     place_id = Column(Integer, ForeignKey(Place.id))
     time_id = Column(Integer, ForeignKey(Work_Time.id))
+    #TODO: relation with backward to Work
 
 
 class Work_Person_Titles(Base):

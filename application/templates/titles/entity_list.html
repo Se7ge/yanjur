@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-    <legend><h2>Индекс титулов</h2></legend>
-    <ul class="nav nav-tabs nav-stacked">
+    <legend><h3>Индекс титулов</h3></legend>
+    <ol>
     {% if data %}
         {% for item in data %}
         <li><a href="{{ url_for('title', id=item.id) }}">{{ item.name }}</a></li>
         {% endfor %}
     {% endif %}
-    </ul>
+    </ol>
 {% endblock %}

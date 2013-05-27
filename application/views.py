@@ -37,7 +37,7 @@ def entity_list(name):
 def work(id):
     work = session.query(Work).get(id)
     if work:
-        return render_template('entity.html', entity='work', entity_id=id, data=work)
+        return render_template('works/entity.html', entity='work', entity_id=id, data=work)
     else:
         abort(404)
 
