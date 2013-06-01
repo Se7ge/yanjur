@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from flask import render_template, abort
 from application.app import app
-from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person
+from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
 from admin.database import Session
 from application.context_processors import sidebar_menu
 
@@ -81,8 +81,17 @@ def person(id):
 @app.route('/title/<int:id>.html')
 def title(id):
     title = session.query(Title).get(id)
+    query = (session.query(Person)
+             .join(Work_Person.work)
+             .filter(Work_Person.titles.any(Title.id == id))
+             .order_by(Person.name))
+    person_titles = query.all()
     if title:
-        return render_template('titles/entity.html', entity='title', entity_id=id, data=title)
+        return render_template('titles/entity.html',
+                               entity='title',
+                               entity_id=id,
+                               entity_data=title,
+                               person_titles=person_titles)
     else:
         abort(404)
 

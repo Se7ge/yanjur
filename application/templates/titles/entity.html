@@ -1,5 +1,21 @@
 {% extends 'base.html' %}
+{% block title %} > Титулы > {{ entity_data.name }}{% endblock %}
 {% block content %}
-    <legend><h2>{{ data.name }}</h2></legend>
-    <p>Здесь будет информация по сущности со связанными данными</p>
+    <legend><h3>{{ entity_data.name }}</h3></legend>
+    <table class="table table-striped table-condensed">
+        {% if person_titles %}
+            {% for item in person_titles %}
+            <tr>
+                <td><a href="{{ url_for('person', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td>
+                    {% if item.works %}
+                    {% for person_work in item.works %}
+                    <a href="{{ url_for('work', id=person_work.work.id) }}" class="label label-inverse" title="{{ person_work.work.name }}">{{ person_work.work.number }}</a>
+                    {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
 {% endblock %}
