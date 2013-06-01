@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from flask import render_template, abort
 from application.app import app
-from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person
+from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person
 from admin.database import Session
 from application.context_processors import sidebar_menu
 
@@ -45,8 +45,35 @@ def work(id):
 @app.route('/person/<int:id>.html')
 def person(id):
     person = session.query(Person).get(id)
+    person_titles = (session.query(Title)
+                     .join(Work_Person.work)
+                     .filter(Title.works.any(Work_Person.person_id == id))
+                     .order_by(Title.name, Work.number)
+                     .all())
+    person_actions = (session.query(Action)
+                      .join(Work_Person.work)
+                      .filter(Action.works.any(Work_Person.person_id == id))
+                      .order_by(Action.name, Work.number)
+                      .all())
+    person_times = (session.query(Work_Time)
+                    .join(Work_Person.work)
+                    .filter(Work_Time.works.any(Work_Person.person_id == id))
+                    .order_by(Work_Time.name, Work.number)
+                    .all())
+    person_places = (session.query(Place)
+                     .join(Work_Person.work)
+                     .filter(Place.works.any(Work_Person.person_id == id))
+                     .order_by(Place.name, Work.number)
+                     .all())
     if person:
-        return render_template('persons/entity.html', entity='person', entity_id=id, data=person)
+        return render_template('persons/entity.html',
+                               entity='person',
+                               entity_id=id,
+                               person=person,
+                               person_titles=person_titles,
+                               person_actions=person_actions,
+                               person_times=person_times,
+                               person_places=person_places,)
     else:
         abort(404)
 

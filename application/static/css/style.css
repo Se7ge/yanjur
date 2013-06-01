@@ -52,3 +52,14 @@ a.site-name{
 .navbar-inverse .nav > li > a:hover {
   color: gold;
 }
+a.nowrap{
+    white-space: nowrap;
+}
+a.label-inverse{
+    background-color: #111111;
+    font-weight: normal;
+    color: goldenrod;
+}
+a.label-inverse:hover{
+    color: gold;
+}

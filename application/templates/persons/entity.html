@@ -1,5 +1,75 @@
 {% extends 'base.html' %}
+{% block title %} > Авторы > {{ person.name }}{% endblock %}
 {% block content %}
-    <legend><h3>{{ data.name }}</h3></legend>
-    <p>Здесь будет информация по сущности со связанными данными</p>
+    <legend><h3>{{ person.name }}</h3></legend>
+    <table class="table table-striped table-condensed">
+        {% if person_titles %}
+            <tr class="warning">
+                <th colspan="2"><h4>Титулы</h4></th>
+            </tr>
+            {% for item in person_titles %}
+            <tr>
+                <td><a href="{{ url_for('title', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td>
+                    {% if item.works %}
+                    {% for person_work in item.works %}
+                    <a href="{{ url_for('work', id=person_work.work.id) }}" class="label label-inverse" title="{{ person_work.work.name }}">{{ person_work.work.number }}</a>
+                    {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        {% if person_actions %}
+            <tr class="warning">
+                <th colspan="2"><h4>Действия</h4></th>
+            </tr>
+            {% for item in person_actions %}
+            <tr>
+                <td><a href="{{ url_for('action', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td>
+                    {% if item.works %}
+                    {% for person_work in item.works %}
+                    <a href="{{ url_for('work', id=person_work.work.id) }}" class="label label-inverse" title="{{ person_work.work.name }}">{{ person_work.work.number }}</a>
+                    {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        {% if person_times %}
+            <tr class="warning">
+                <th colspan="2"><h4>Даты</h4></th>
+            </tr>
+            {% for item in person_times %}
+            <tr>
+                <td><a href="{{ url_for('time', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td>
+                    {% if item.works %}
+                    {% for person_work in item.works %}
+                    <a href="{{ url_for('work', id=person_work.work.id) }}" class="label label-inverse" title="{{ person_work.work.name }}">{{ person_work.work.number }}</a>
+                    {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        {% if person_places %}
+            <tr class="warning">
+                <th colspan="2"><h4>Топонимы</h4></th>
+            </tr>
+            {% for item in person_places %}
+            <tr>
+                <td><a href="{{ url_for('time', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td>
+                    {% if item.works %}
+                    {% for person_work in item.works %}
+                    <a href="{{ url_for('work', id=person_work.work.id) }}" class="label label-inverse" title="{{ person_work.work.name }}">{{ person_work.work.number }}</a>
+                    {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
 {% endblock %}

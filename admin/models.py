@@ -115,7 +115,12 @@ class Work_Person(Base):
     person_id = Column(Integer, ForeignKey(Person.id), nullable=False)
     place_id = Column(Integer, ForeignKey(Place.id))
     time_id = Column(Integer, ForeignKey(Work_Time.id))
-    #TODO: relation with backward to Work
+
+    work = relationship(Work)
+    titles = relationship(Title, secondary='work_person_titles', backref='works')
+    actions = relationship(Action, secondary='work_person_actions', backref='works')
+    times = relationship(Work_Time, backref='works')
+    places = relationship(Place, backref='works')
 
 
 class Work_Person_Titles(Base):
