@@ -6,10 +6,10 @@
         {% if person_titles %}
             {% for item in person_titles %}
             <tr>
-                <td><a href="{{ url_for('person', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td><a href="{{ url_for('person', id=item['person'].id) }}" title="{{ item['person'].name }}">{{ item['person'].name }}</a></td>
                 <td>
-                    {% if item.works %}
-                    {% for person_work in item.works %}
+                    {% if item['works'] %}
+                    {% for person_work in item['works'] %}
                     <a href="{{ url_for('work', id=person_work.work.id) }}" class="label label-inverse" title="{{ person_work.work.name }}">{{ person_work.work.number }}</a>
                     {% endfor %}
                     {% endif %}

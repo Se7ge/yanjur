@@ -45,11 +45,21 @@ def work(id):
 @app.route('/person/<int:id>.html')
 def person(id):
     person = session.query(Person).get(id)
-    person_titles = (session.query(Title)
-                     .join(Work_Person.work)
-                     .filter(Title.works.any(Work_Person.person_id == id))
-                     .order_by(Title.name, Work.number)
-                     .all())
+    query = (session.query(Title)
+             .join(Work_Person_Titles)
+             .join(Work_Person)
+             .filter(Work_Person.person_id == id)
+             .order_by(Title.name))
+    person_titles = list()
+    for title in query.all():
+        works = (session.query(Work_Person)
+                 .join(Work_Person_Titles)
+                 .join(Work)
+                 .filter(Work_Person_Titles.title_id == title.id, Work_Person.person_id == id)
+                 .order_by(Work.number)
+                 .all())
+        person_titles.append(dict(title=title, works=works))
+
     person_actions = (session.query(Action)
                       .join(Work_Person.work)
                       .filter(Action.works.any(Work_Person.person_id == id))
@@ -81,11 +91,21 @@ def person(id):
 @app.route('/title/<int:id>.html')
 def title(id):
     title = session.query(Title).get(id)
-    query = (session.query(Work_Person)
-             .join(Person.works)
-             .filter(Work_Person.titles.any(Title.id == id))
-             .order_by(Person.name).group_by(Person))
-    person_titles = query.all()
+    person_titles = list()
+    query = (session.query(Person)
+             .join(Work_Person)
+             .join(Work_Person_Titles)
+             .filter(Work_Person_Titles.title_id == id)
+             .order_by(Person.name))
+    for person in query.all():
+        works = (session.query(Work_Person)
+                 .join(Work_Person_Titles)
+                 .join(Work)
+                 .filter(Work_Person_Titles.title_id == id, Work_Person.person_id == person.id)
+                 .order_by(Work.number)
+                 .all())
+        person_titles.append(dict(person=person, works=works))
+
     if title:
         return render_template('titles/entity.html',
                                entity='title',

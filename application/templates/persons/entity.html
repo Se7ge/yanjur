@@ -9,10 +9,10 @@
             </tr>
             {% for item in person_titles %}
             <tr>
-                <td><a href="{{ url_for('title', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td><a href="{{ url_for('title', id=item['title'].id) }}" title="{{ item['title'].name }}">{{ item['title'].name }}</a></td>
                 <td>
-                    {% if item.works %}
-                    {% for person_work in item.works %}
+                    {% if item['works'] %}
+                    {% for person_work in item['works'] %}
                     <a href="{{ url_for('work', id=person_work.work.id) }}" class="label label-inverse" title="{{ person_work.work.name }}">{{ person_work.work.number }}</a>
                     {% endfor %}
                     {% endif %}
