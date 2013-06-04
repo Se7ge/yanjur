@@ -6,7 +6,7 @@
         {% if person_times %}
             {% for item in person_times %}
             <tr>
-                <td><a href="{{ url_for('person', id=item['person'].id) }}" title="{{ item['person'].name }}">{{ item['person'].name }}</a></td>
+                <td class="span4"><a href="{{ url_for('person', id=item['person'].id) }}" title="{{ item['person'].name }}">{{ item['person'].name }}</a></td>
                 <td>
                     {% if item['works'] %}
                     {% for person_work in item['works'] %}

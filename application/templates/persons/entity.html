@@ -9,7 +9,7 @@
             </tr>
             {% for item in person_titles %}
             <tr>
-                <td><a href="{{ url_for('title', id=item['title'].id) }}" title="{{ item['title'].name }}">{{ item['title'].name }}</a></td>
+                <td class="span4"><a href="{{ url_for('title', id=item['title'].id) }}" title="{{ item['title'].name }}">{{ item['title'].name }}</a></td>
                 <td>
                     {% if item['works'] %}
                     {% for person_work in item['works'] %}
