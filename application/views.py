@@ -81,10 +81,10 @@ def person(id):
 @app.route('/title/<int:id>.html')
 def title(id):
     title = session.query(Title).get(id)
-    query = (session.query(Person)
-             .join(Work_Person.work)
+    query = (session.query(Work_Person)
+             .join(Person.works)
              .filter(Work_Person.titles.any(Title.id == id))
-             .order_by(Person.name))
+             .order_by(Person.name).group_by(Person))
     person_titles = query.all()
     if title:
         return render_template('titles/entity.html',
