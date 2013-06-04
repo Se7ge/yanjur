@@ -2,6 +2,7 @@
 from flask import render_template, abort
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
+from admin.models import Work_Person_Actions
 from admin.database import Session
 from application.context_processors import sidebar_menu
 
@@ -45,12 +46,13 @@ def work(id):
 @app.route('/person/<int:id>.html')
 def person(id):
     person = session.query(Person).get(id)
+
+    person_titles = list()
     query = (session.query(Title)
              .join(Work_Person_Titles)
              .join(Work_Person)
              .filter(Work_Person.person_id == id)
              .order_by(Title.name))
-    person_titles = list()
     for title in query.all():
         works = (session.query(Work_Person)
                  .join(Work_Person_Titles)
@@ -60,21 +62,47 @@ def person(id):
                  .all())
         person_titles.append(dict(title=title, works=works))
 
-    person_actions = (session.query(Action)
-                      .join(Work_Person.work)
-                      .filter(Action.works.any(Work_Person.person_id == id))
-                      .order_by(Action.name, Work.number)
-                      .all())
-    person_times = (session.query(Work_Time)
-                    .join(Work_Person.work)
-                    .filter(Work_Time.works.any(Work_Person.person_id == id))
-                    .order_by(Work_Time.name, Work.number)
-                    .all())
-    person_places = (session.query(Place)
-                     .join(Work_Person.work)
-                     .filter(Place.works.any(Work_Person.person_id == id))
-                     .order_by(Place.name, Work.number)
-                     .all())
+    person_actions = list()
+    query = (session.query(Action)
+             .join(Work_Person_Actions)
+             .join(Work_Person)
+             .filter(Work_Person.person_id == id)
+             .order_by(Action.name))
+    for action in query.all():
+        works = (session.query(Work_Person)
+                 .join(Work_Person_Actions)
+                 .join(Work)
+                 .filter(Work_Person_Actions.action_id == action.id, Work_Person.person_id == id)
+                 .order_by(Work.number)
+                 .all())
+        person_actions.append(dict(action=action, works=works))
+
+    person_times = list()
+    query = (session.query(Work_Time)
+             .join(Work_Person)
+             .filter(Work_Person.person_id == id)
+             .order_by(Work_Time.name))
+    for time in query.all():
+        works = (session.query(Work_Person)
+                 .join(Work)
+                 .filter(Work_Person.time_id == time.id, Work_Person.person_id == id)
+                 .order_by(Work.number)
+                 .all())
+        person_times.append(dict(time=time, works=works))
+
+    person_places = list()
+    query = (session.query(Place)
+             .join(Work_Person)
+             .filter(Work_Person.person_id == id)
+             .order_by(Place.name))
+    for place in query.all():
+        works = (session.query(Work_Person)
+                 .join(Work)
+                 .filter(Work_Person.place_id == place.id, Work_Person.person_id == id)
+                 .order_by(Work.number)
+                 .all())
+        person_places.append(dict(place=place, works=works))
+
     if person:
         return render_template('persons/entity.html',
                                entity='person',
@@ -119,8 +147,26 @@ def title(id):
 @app.route('/action/<int:id>.html')
 def action(id):
     action = session.query(Action).get(id)
+    person_actions = list()
+    query = (session.query(Person)
+             .join(Work_Person)
+             .join(Work_Person_Actions)
+             .filter(Work_Person_Actions.action_id == id)
+             .order_by(Person.name))
+    for person in query.all():
+        works = (session.query(Work_Person)
+                 .join(Work_Person_Actions)
+                 .join(Work)
+                 .filter(Work_Person_Actions.action_id == id, Work_Person.person_id == person.id)
+                 .order_by(Work.number)
+                 .all())
+        person_actions.append(dict(person=person, works=works))
     if action:
-        return render_template('actions/entity.html', entity='action', entity_id=id, data=action)
+        return render_template('actions/entity.html',
+                               entity='action',
+                               entity_id=id,
+                               entity_data=action,
+                               person_actions=person_actions)
     else:
         abort(404)
 
@@ -128,8 +174,24 @@ def action(id):
 @app.route('/place/<int:id>.html')
 def place(id):
     place = session.query(Place).get(id)
+    person_places = list()
+    query = (session.query(Person)
+             .join(Work_Person)
+             .filter(Work_Person.place_id == id)
+             .order_by(Person.name))
+    for person in query.all():
+        works = (session.query(Work_Person)
+                 .join(Work)
+                 .filter(Work_Person.place_id == id, Work_Person.person_id == person.id)
+                 .order_by(Work.number)
+                 .all())
+        person_places.append(dict(person=person, works=works))
     if place:
-        return render_template('places/entity.html', entity='place', entity_id=id, data=place)
+        return render_template('places/entity.html',
+                               entity='place',
+                               entity_id=id,
+                               entity_data=place,
+                               person_places=person_places)
     else:
         abort(404)
 
@@ -137,8 +199,24 @@ def place(id):
 @app.route('/time/<int:id>.html')
 def time(id):
     time = session.query(Work_Time).get(id)
+    person_times = list()
+    query = (session.query(Person)
+             .join(Work_Person)
+             .filter(Work_Person.time_id == id)
+             .order_by(Person.name))
+    for person in query.all():
+        works = (session.query(Work_Person)
+                 .join(Work)
+                 .filter(Work_Person.time_id == id, Work_Person.person_id == person.id)
+                 .order_by(Work.number)
+                 .all())
+        person_times.append(dict(person=person, works=works))
     if time:
-        return render_template('times/entity.html', entity='time', entity_id=id, data=time)
+        return render_template('times/entity.html',
+                               entity='time',
+                               entity_id=id,
+                               entity_data=time,
+                               person_times=person_times)
     else:
         abort(404)
 

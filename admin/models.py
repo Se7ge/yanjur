@@ -117,9 +117,9 @@ class Work_Person(Base):
     time_id = Column(Integer, ForeignKey(Work_Time.id))
 
     work = relationship(Work)
-    person = relationship(Person, backref='works')
-    titles = relationship(Title, secondary='work_person_titles', backref='works')
-    actions = relationship(Action, secondary='work_person_actions', backref='works')
+    # person = relationship(Person, backref='works')
+    # titles = relationship(Title, secondary='work_person_titles', backref='works')
+    # actions = relationship(Action, secondary='work_person_actions', backref='works')
     times = relationship(Work_Time, backref='works')
     places = relationship(Place, backref='works')
 
