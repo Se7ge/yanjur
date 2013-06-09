@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %} > Результаты поиска{% endblock %}
+{% block content %}
+    <legend>Результаты поиска</legend>
+    <form action="{{ url_for('search') }}" class="form">
+        <div class="span12 input-append">
+            <input id="search_input" class="span10" type="text" name="q" placeholder="Введите поисковый запрос" required value="{{ request.args.get('q')|e }}">
+            <button class="btn" type="submit">Искать</button>
+        </div>
+        <a href="javascript:void(0);" class="btn btn-small" onclick="$('#search_input').insertAtCaret('ö');">ö</a>
+        <a href="javascript:void(0);" class="btn btn-small" onclick="$('#search_input').insertAtCaret('ü');">ü</a>
+        <a href="javascript:void(0);" class="btn btn-small" onclick="$('#search_input').insertAtCaret('γ');">γ</a>
+        <a href="javascript:void(0);" class="btn btn-small" onclick="$('#search_input').insertAtCaret('š');">š</a>
+    </form>
+    {% if not data %}
+        По запросу &laquo;<b>{{ request.args.get('q')|e }}</b>&raquo; ничего не найдено
+    {% else %}
+        <table class="table table-striped table-hover table-condensed">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Название</th>
+                <th>Место</th>
+                <th>Concordance</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if data %}
+            {% for item in data %}
+            <tr>
+                <td nowrap><a href="{{ url_for('work', id=item.id) }}">{{ item.number }}</a></td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.location }}</td>
+                <td>{{ item.concordance }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+    {% endif %}
+{% endblock %}

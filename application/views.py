@@ -1,10 +1,21 @@
 # -*- encoding: utf-8 -*-
-from flask import render_template, abort
+from flask import render_template, abort, request
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
 from admin.models import Work_Person_Actions
 from admin.database import Session
 from application.context_processors import sidebar_menu
+from settings import SEARCHD_CONNECTION
+
+from sphinxit.core.nodes import Count, OR, RawAttr
+from sphinxit.core.processor import Search, Snippet
+
+
+class SearchConfig(object):
+    DEBUG = app.debug
+    WITH_META = True
+    WITH_STATUS = True
+    SEARCHD_CONNECTION = SEARCHD_CONNECTION
 
 
 session = Session()
@@ -32,6 +43,25 @@ def entity_list(name):
         order_by = 'number'
     data = session.query(ENTITIES[name]).order_by(order_by)
     return render_template('%s/entity_list.html' % name, data=data)
+
+
+@app.route('/search/')
+def search():
+    template = 'index.html'
+    data = None
+    if request.args.get('q'):
+        search = Search(['works'], config=SearchConfig)
+        search = search.match(request.args.get('q')).limit(0, 1000)
+        result = search.ask()
+        if result['result']:
+            ids = list()
+            for item in result['result']:
+                ids.append(item['id'])
+            if ids:
+                data = session.query(Work).filter(Work.id.in_(ids)).all()
+
+        template = 'result.html'
+    return render_template('search/%s' % template, data=data)
 
 
 @app.route('/work/<int:id>.html')

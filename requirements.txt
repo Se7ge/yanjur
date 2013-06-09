@@ -7,3 +7,4 @@ SQLAlchemy
 Flask-SQLAlchemy
 xlrd
 mysql-python
+sphinxit
