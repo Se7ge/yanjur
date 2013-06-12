@@ -51,7 +51,7 @@ def search():
     data = None
     if request.args.get('q'):
         search = Search(['works'], config=SearchConfig)
-        search = search.match(request.args.get('q')).limit(0, 1000)
+        search = search.match(request.args.get('q')+'/1').limit(0, 1000)
         result = search.ask()
         if result['result']:
             ids = list()
