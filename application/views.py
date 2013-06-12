@@ -41,7 +41,7 @@ def entity_list(name):
     order_by = 'name'
     if name == 'works':
         order_by = 'number'
-    data = session.query(ENTITIES[name]).order_by(order_by)
+    data = session.query(ENTITIES[name]).order_by(order_by + '+0')
     return render_template('%s/entity_list.html' % name, data=data)
 
 
