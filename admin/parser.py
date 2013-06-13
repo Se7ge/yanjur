@@ -71,7 +71,7 @@ def _add_work(category, data_row):
         for obj in objects.values():
             if not getattr(obj, 'id', None):
                 session.add(obj)
-            session.commit()
+                session.commit()
             object_id = obj.id
     return object_id
 

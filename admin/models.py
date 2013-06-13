@@ -28,8 +28,8 @@ class Work(Base):
     id = Column(Integer, primary_key=True)
     category_id = Column(Integer, ForeignKey(Work_Categories.id), doc='Link to category', nullable=False)
     number = Column(String(10), nullable=False)
-    name = Column(Unicode(255), nullable=False)
-    location = Column(Unicode(50))
+    name = Column(UnicodeText, nullable=False)
+    location = Column(UnicodeText)
     colophon = Column(UnicodeText)
     concordance = Column(Unicode(50))
     #TODO: many-to-many
