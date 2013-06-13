@@ -8,6 +8,9 @@
     <div class="container">
       {% include '_top.html' %}
       <div class="row-fluid">
+            <div class="span3">
+                {% include '_sidebar.html' %}
+            </div><!--/span-->
             <div class="span9">
             {% block content %}
               <div class="hero-unit" style="height:200px;background: #EEEEEE url('../static/img/monastery.jpg') no-repeat center;">
@@ -50,9 +53,6 @@
                 </div><!--/span-->
               </div><!--/row-->
             {% endblock %}
-            </div><!--/span-->
-            <div class="span3">
-                {% include '_sidebar.html' %}
             </div><!--/span-->
       </div><!--/row-->
       {% include '_footer.html' %}

@@ -1,7 +1,7 @@
 {% block sidebar %}
   <a href="{{ url_for('search') }}" class="btn btn-success span">Поиск</a>
     <hr>
-  <div class="well sidebar-nav">
+  <div class="well-inverse sidebar-nav navbar-inverse">
     <ul class="nav nav-list">
       {% if works %}
       <li{% if request.path==url_for('entity_list', name='works') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='works') }}">Индекс сочинений <span class="label label-important pull-right">{{ works }}</span></a></li>
