@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <legend><h3>Индекс топонимов</h3></legend>
+    <legend><h3>{{ _('Toponyms') }}</h3></legend>
     <ol>
     {% if data %}
         {% for item in data %}

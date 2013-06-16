@@ -1,25 +1,25 @@
 {% block sidebar %}
-  <a href="{{ url_for('search') }}" class="btn btn-success span">Поиск</a>
+  <a href="{{ url_for('search') }}" class="btn btn-success span">{{ _('SEARCH') }}</a>
     <hr>
   <div class="well-inverse sidebar-nav navbar-inverse">
     <ul class="nav nav-list">
       {% if works %}
-      <li{% if request.path==url_for('entity_list', name='works') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='works') }}">Индекс сочинений <span class="label label-important pull-right">{{ works }}</span></a></li>
+      <li{% if request.path==url_for('entity_list', name='works') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='works') }}">{{ _('Titles or Opening Lines') }} <span class="label label-important pull-right">{{ works }}</span></a></li>
       {% endif %}
       {% if persons %}
-      <li{% if request.path==url_for('entity_list', name='persons') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='persons') }}">Индекс авторов <span class="label label-important pull-right">{{ persons }}</span></a></li>
+      <li{% if request.path==url_for('entity_list', name='persons') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='persons') }}">{{ _('Personal Names') }} <span class="label label-important pull-right">{{ persons }}</span></a></li>
       {% endif %}
       {% if titles %}
-      <li{% if request.path==url_for('entity_list', name='titles') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='titles') }}">Индекс титулов <span class="label label-important pull-right">{{ titles }}</span></a></li>
+      <li{% if request.path==url_for('entity_list', name='titles') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='titles') }}">{{ _('Titles') }} <span class="label label-important pull-right">{{ titles }}</span></a></li>
       {% endif %}
       {% if actions %}
-      <li{% if request.path==url_for('entity_list', name='actions') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='actions') }}">Индекс действий <span class="label label-important pull-right">{{ actions }}</span></a></li>
+      <li{% if request.path==url_for('entity_list', name='actions') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='actions') }}">{{ _('Actions') }} <span class="label label-important pull-right">{{ actions }}</span></a></li>
       {% endif %}
       {% if places %}
-      <li{% if request.path==url_for('entity_list', name='places') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='places') }}">Индекс топонимов <span class="label label-important pull-right">{{ places }}</span></a></li>
+      <li{% if request.path==url_for('entity_list', name='places') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='places') }}">{{ _('Toponyms') }} <span class="label label-important pull-right">{{ places }}</span></a></li>
       {% endif %}
       {% if times %}
-      <li{% if request.path==url_for('entity_list', name='times') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='times') }}">Индекс дат <span class="label label-important pull-right">{{ times }}</span></a></li>
+      <li{% if request.path==url_for('entity_list', name='times') %} class="active"{% endif %}><a href="{{ url_for('entity_list', name='times') }}">{{ _('Dates') }} <span class="label label-important pull-right">{{ times }}</span></a></li>
       {% endif %}
     </ul>
   </div><!--/.well -->

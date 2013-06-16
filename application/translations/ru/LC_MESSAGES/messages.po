@@ -1,0 +1,127 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2013 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2013-06-16 18:40+0400\n"
+"PO-Revision-Date: 2013-06-16 18:40+0400\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: templates/_sidebar.html:2 templates/search/index.html:2
+msgid "SEARCH"
+msgstr "ПОИСК"
+
+#: templates/_sidebar.html:7 templates/works/entity.html:2
+#: templates/works/entity_list.html:2 templates/works/entity_list.html:4
+msgid "Titles or Opening Lines"
+msgstr "Начальные строки текстов"
+
+#: templates/_sidebar.html:10 templates/persons/entity.html:2
+#: templates/persons/entity_list.html:2 templates/persons/entity_list.html:4
+msgid "Personal Names"
+msgstr "Имена"
+
+#: templates/_sidebar.html:13 templates/persons/entity.html:8
+#: templates/titles/entity.html:2 templates/titles/entity_list.html:2
+#: templates/titles/entity_list.html:4
+msgid "Titles"
+msgstr "Титулатуры"
+
+#: templates/_sidebar.html:16 templates/actions/entity.html:2
+#: templates/actions/entity_list.html:3 templates/persons/entity.html:25
+msgid "Actions"
+msgstr "Действия"
+
+#: templates/_sidebar.html:19 templates/persons/entity.html:59
+#: templates/places/entity.html:2 templates/places/entity_list.html:3
+msgid "Toponyms"
+msgstr "Топонимы"
+
+#: templates/_sidebar.html:22 templates/persons/entity.html:42
+#: templates/times/entity.html:2 templates/times/entity_list.html:3
+msgid "Dates"
+msgstr "Даты"
+
+#: templates/_top.html:2
+msgid "Home"
+msgstr "На главную"
+
+#: templates/_top.html:2
+msgid "Index of Golden Kanjur"
+msgstr "Каталог монгольского &laquo;Золотого Ганджура&raquo;"
+
+#: templates/_top.html:7
+msgid "Project"
+msgstr "О проекте"
+
+#: templates/_top.html:8
+msgid "History"
+msgstr "История"
+
+#: templates/_top.html:9
+msgid "Abbreviations and Bibliography"
+msgstr "Список сокращений и библиография"
+
+#: templates/_top.html:9
+msgid "Bibliography"
+msgstr "Библиография"
+
+#: templates/_top.html:10
+msgid "Legend"
+msgstr "Условные обозначения"
+
+#: templates/_top.html:11
+msgid "Guide to the Catalogue"
+msgstr "Инструкция"
+
+#: templates/_top.html:12
+msgid "Contacts"
+msgstr "Контакты"
+
+#: templates/base.html:4
+msgid "Catalogue of the Golden Kanjur"
+msgstr "Каталог &laquo;Золотого Ганджура&raquo;"
+
+#: templates/search/index.html:4
+msgid "Search by the Golden Kanjur "
+msgstr "Поиск по каталогу монгольского «Золотого Ганджура»"
+
+#: templates/search/index.html:7 templates/search/result.html:7
+msgid "Enter search query"
+msgstr "Введите поисковый запрос"
+
+#: templates/search/index.html:8 templates/search/result.html:8
+msgid "Search"
+msgstr "Искать"
+
+#: templates/search/result.html:2 templates/search/result.html:4
+msgid "Search results"
+msgstr "Результаты поиска"
+
+#: templates/search/result.html:22
+msgid "Title or Opening Lines"
+msgstr "Название или начальные строки"
+
+#: templates/search/result.html:23 templates/works/entity_list.html:10
+msgid "Toponym"
+msgstr "Топоним"
+
+#: templates/search/result.html:24 templates/works/entity_list.html:11
+msgid "Concordance"
+msgstr "Concordance"
+
+#: templates/works/entity_list.html:9
+msgid "Title or Opening Lines"
+msgstr "Название или начальные строки"
+

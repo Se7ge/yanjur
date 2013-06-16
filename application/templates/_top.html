@@ -1,15 +1,15 @@
 <div class="masthead">
-    <h3><a href="{{ url_for('index') }}" title="На главную" class="site-name">Каталог монгольского &laquo;Золотого Ганджура&raquo;</a></h3>
+    <h3><a href="{{ url_for('index') }}" title="{{ _('Home') }}" class="site-name">{{ _('Index of Golden Kanjur') }}</a></h3>
     <div class="navbar navbar-inverse">
       <div class="navbar-inner">
         <div class="container">
           <ul class="nav">
-            <li{% if request.path==url_for('show_article', url='about') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='about') }}" title="О проекте">О проекте</a></li>
-            <li{% if request.path==url_for('show_article', url='history') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='history') }}" title="История">История</a></li>
-            <li{% if request.path==url_for('show_article', url='bibliography') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='bibliography') }}" title="Библиография">Библиография</a></li>
-            <li{% if request.path==url_for('show_article', url='symbols') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='symbols') }}" title="Условные обозначения">Условные обозначения</a></li>
-            <li{% if request.path==url_for('show_article', url='instruction') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='instruction') }}" title="Инструкция">Инструкция</a></li>
-            <li{% if request.path==url_for('show_article', url='contacts') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='contacts') }}" title="Контакты">Контакты</a></li>
+            <li{% if request.path==url_for('show_article', url='about') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='about') }}" title="{{ _('Project') }}">{{ _('Project') }}</a></li>
+            <li{% if request.path==url_for('show_article', url='history') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='history') }}" title="_('History of the Golden Kanjur')">{{ _('History') }}</a></li>
+            <li{% if request.path==url_for('show_article', url='bibliography') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='bibliography') }}" title="{{ _('Abbreviations and Bibliography') }}">{{ _('Bibliography') }}</a></li>
+            <li{% if request.path==url_for('show_article', url='symbols') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='symbols') }}" title="{{ _('Legend') }}">{{ _('Legend') }}</a></li>
+            <li{% if request.path==url_for('show_article', url='instruction') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='instruction') }}" title="{{ _('Guide to the Catalogue') }}">{{ _('Guide to the Catalogue') }}</a></li>
+            <li{% if request.path==url_for('show_article', url='contacts') %} class="active"{% endif %}><a href="{{ url_for('show_article', url='contacts') }}" title="{{ _('Contacts') }}">{{ _('Contacts') }}</a></li>
           </ul>
         </div>
       </div>

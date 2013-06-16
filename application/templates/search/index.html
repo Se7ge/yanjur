@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %} > Поиск{% endblock %}
+{% block title %} > {{ _('SEARCH') }}{% endblock %}
 {% block content %}
-    <legend>Поиск по каталогу монгольского «Золотого Ганджура»</legend>
+    <legend>{{ _('Search by the Golden Kanjur ') }}Поиск по каталогу монгольского «Золотого Ганджура»</legend>
     <form action="{{ url_for('search') }}" class="form">
         <div class="span12 input-append">
-            <input id="search_input" class="span10" type="text" name="q" placeholder="Введите поисковый запрос" required>
-            <button class="btn btn-primary" type="submit">Искать</button>
+            <input id="search_input" class="span10" type="text" name="q" placeholder="{{ _('Enter search query') }}Введите поисковый запрос" required>
+            <button class="btn btn-primary" type="submit">{{ _('Search') }}</button>
         </div>
         <a href="javascript:void(0);" class="btn btn-small btn-primary" onclick="$('#search_input').insertAtCaret('ö');">ö</a>
         <a href="javascript:void(0);" class="btn btn-small btn-primary" onclick="$('#search_input').insertAtCaret('ü');">ü</a>

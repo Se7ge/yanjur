@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% block title %} > Титулы{% endblock %}
+{% block title %} > {{ _('Titles') }}{% endblock %}
 {% block content %}
-    <legend><h3>Индекс титулов</h3></legend>
+    <legend><h3>{{ _('Titles') }}</h3></legend>
     <ol>
     {% if data %}
         {% for item in data %}

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %} > Авторы > {{ person.name }}{% endblock %}
+{% block title %} > {{ _('Personal Names') }} > {{ person.name }}{% endblock %}
 {% block content %}
     <legend><h3>{{ person.name }}</h3></legend>
     <table class="table table-striped table-condensed">
         {% if person_titles %}
             <tr class="warning">
-                <th colspan="2"><h4>Титулы</h4></th>
+                <th colspan="2"><h4>{{ _('Titles') }}</h4></th>
             </tr>
             {% for item in person_titles %}
             <tr>
@@ -22,7 +22,7 @@
         {% endif %}
         {% if person_actions %}
             <tr class="warning">
-                <th colspan="2"><h4>Действия</h4></th>
+                <th colspan="2"><h4>{{ _('Actions') }}</h4></th>
             </tr>
             {% for item in person_actions %}
             <tr>
@@ -39,7 +39,7 @@
         {% endif %}
         {% if person_times %}
             <tr class="warning">
-                <th colspan="2"><h4>Даты</h4></th>
+                <th colspan="2"><h4>{{ _('Dates') }}</h4></th>
             </tr>
             {% for item in person_times %}
             <tr>
@@ -56,7 +56,7 @@
         {% endif %}
         {% if person_places %}
             <tr class="warning">
-                <th colspan="2"><h4>Топонимы</h4></th>
+                <th colspan="2"><h4>{{ _('Toponyms') }}</h4></th>
             </tr>
             {% for item in person_places %}
             <tr>
