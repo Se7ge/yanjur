@@ -84,7 +84,7 @@ class Person_Alias(Base):
     id = Column(Integer, primary_key=True)
     person_id = Column(Integer, ForeignKey(Person.id), doc='Link to person')
     name = Column(Unicode(50), nullable=False)
-    person = relationship(Person)
+    person = relationship(Person, backref='aliases')
 
 
 class Connection_Type(Base):

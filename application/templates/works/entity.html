@@ -2,8 +2,29 @@
 {% block title %} > Сочинения > {{ data.number }}{% endblock %}
 {% block content %}
     <legend><h3>{{ data.number }}</h3></legend>
-    <h4>{{ data.name }}</h4>
-    <p>{{ data.colophon }}</p>
-    <p>{{ data.location }}</p>
-    <p>{{ data.concordance }}</p>
+    <div id="work_data">
+        <h4>{{ data.name }}</h4>
+        {% if data.colophon %}<p>{{ data.colophon }}</p>{% endif %}
+        {% if data.location %}<p>{{ data.location }}</p>{% endif %}
+    </div>
+    {% if data.concordance %}<p>{{ data.concordance }}</p>{% endif %}
+{% endblock %}
+{% block added_js %}
+<script type="text/javascript">
+var links = {{ links|tojson|safe }};
+RegExp.escape = function(str) {
+    return (str+'').replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+$(document).ready(function(){
+    var content = $('#work_data').html();
+    for (var i in links){
+        var find_re = new RegExp("[^>](" + RegExp.escape(links[i].name) + ")[^<]", 'gi');
+        var re = new RegExp("(" + RegExp.escape(links[i].name) + ")", 'gi');
+        if(find_re.test(content)){
+            content = content.replace(re, '<a href="' + links[i].url + '">$1</a>');
+        }
+    }
+    $('#work_data').html(content)
+});
+</script>
 {% endblock %}

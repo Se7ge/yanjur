@@ -61,5 +61,6 @@
     <script src="{{ url_for('static', filename='js/jquery-1.9.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block added_js %}{% endblock %}
   </body>
 </html>

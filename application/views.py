@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-from flask import render_template, abort, request
+from flask import render_template, abort, request, url_for, json
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
-from admin.models import Work_Person_Actions
+from admin.models import Work_Person_Actions, Connection, Connection_Titles
 from admin.database import Session
 from application.context_processors import sidebar_menu
 from settings import SEARCHD_CONNECTION
@@ -68,9 +68,87 @@ def search():
 def work(id):
     work = session.query(Work).get(id)
     if work:
-        return render_template('works/entity.html', entity='work', entity_id=id, data=work)
+        context_links = _get_context_links(id)
+        return render_template('works/entity.html',
+                               entity='work',
+                               entity_id=id,
+                               data=work,
+                               links=context_links)
     else:
         abort(404)
+
+
+def _get_context_links(work_id):
+    result = list()
+
+    persons = session.query(Person).join(Work_Person).filter(Work_Person.work_id == work_id).all()
+    if persons:
+        for person in persons:
+            if person.name:
+                result.append(dict(name=person.name, url=url_for('person', id=person.id)))
+            if person.aliases:
+                for alias in person.aliases:
+                    if alias.name:
+                        result.append(dict(name=alias.name, url=url_for('person', id=person.id)))
+
+    titles = (session.query(Title)
+              .join(Work_Person_Titles)
+              .join(Work_Person)
+              .filter(Work_Person.work_id == work_id)
+              .all())
+    if titles:
+        for title in titles:
+            if title.name:
+                result.append(dict(name=title.name, url=url_for('title', id=title.id)))
+
+    actions = (session.query(Action)
+               .join(Work_Person_Actions)
+               .join(Work_Person)
+               .filter(Work_Person.work_id == work_id)
+               .all())
+    if actions:
+        for action in actions:
+            if action.name:
+                result.append(dict(name=action.name, url=url_for('action', id=action.id)))
+
+    places = session.query(Place).join(Work_Person).filter(Work_Person.work_id == work_id).all()
+    if places:
+        for place in places:
+            if place.name:
+                result.append(dict(name=place.name, url=url_for('place', id=place.id)))
+
+    times = session.query(Work_Time).join(Work_Person).filter(Work_Person.work_id == work_id).all()
+    if times:
+        for time in times:
+            if time.name:
+                result.append(dict(name=time.name, url=url_for('time', id=time.id)))
+
+    connection_persons = (session.query(Person)
+                          .join(Connection)
+                          .join(Work_Person)
+                          .filter(Work_Person.work_id == work_id)
+                          .all())
+    if connection_persons:
+        for person in connection_persons:
+            if person.name:
+                result.append(dict(name=person.name, url=url_for('person', id=person.id)))
+            if person.aliases:
+                for alias in person.aliases:
+                    if alias.name:
+                        result.append(dict(name=person.name, url=url_for('person', id=person.id)))
+
+    connection_titles = (session.query(Title)
+                         .join(Connection_Titles)
+                         .join(Connection)
+                         .join(Work_Person)
+                         .filter(Work_Person.work_id == work_id)
+                         .all())
+    if connection_titles:
+        for title in connection_titles:
+            if title.name:
+                result.append(dict(name=title.name, url=url_for('title', id=title.id)))
+
+    return result
 
 
 @app.route('/person/<int:id>.html')
