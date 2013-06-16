@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} > {{ _('SEARCH') }}{% endblock %}
 {% block content %}
-    <legend>{{ _('Search by the Golden Kanjur ') }}Поиск по каталогу монгольского «Золотого Ганджура»</legend>
+    <legend>{{ _('Search by the Golden Kanjur ') }}</legend>
     <form action="{{ url_for('search') }}" class="form">
         <div class="span12 input-append">
             <input id="search_input" class="span10" type="text" name="q" placeholder="{{ _('Enter search query') }}Введите поисковый запрос" required>
