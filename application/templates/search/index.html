@@ -4,7 +4,7 @@
     <legend>{{ _('Search by the Golden Kanjur ') }}</legend>
     <form action="{{ url_for('search') }}" class="form">
         <div class="span12 input-append">
-            <input id="search_input" class="span10" type="text" name="q" placeholder="{{ _('Enter search query') }}Введите поисковый запрос" required>
+            <input id="search_input" class="span10" type="text" name="q" placeholder="{{ _('Enter search query') }}" required>
             <button class="btn btn-primary" type="submit">{{ _('Search') }}</button>
         </div>
         <a href="javascript:void(0);" class="btn btn-small btn-primary" onclick="$('#search_input').insertAtCaret('ö');">ö</a>
