@@ -57,10 +57,10 @@ def _add_work(category, data_row):
     objects = dict()
     object_id = None
     for i in range(len(WORK_COLUMNS)):
-        if data_row[i].value:
+        if data_row[i].value.strip():
             table_name = WORK_COLUMNS[i]['table'].__name__
             if i == 0 and table_name == Work.__name__:
-                work_obj = _get_work(category, data_row[i].value)
+                work_obj = _get_work(category, data_row[i].value.strip())
                 if work_obj:
                     objects[table_name] = work_obj
             if table_name not in objects:
@@ -77,6 +77,9 @@ def _add_work(category, data_row):
 
 
 def __process_field(table, field, value):
+    value = value.strip()
+    if not value:
+        return None
     _object = _get_object(table, field, value)
     if not _object:
         _object = _add_object(table, field, value)
@@ -107,12 +110,12 @@ def _add_author(work_id, data_row):
                 if values:
                     fields[AUTHOR_COLUMNS[k]['link_table'].__name__][AUTHOR_COLUMNS[k]['link_column']] = list()
                     for value in values:
-                        _object = __process_field(AUTHOR_COLUMNS[k]['table'], 'name', value)
+                        _object = __process_field(AUTHOR_COLUMNS[k]['table'], 'name', value.strip())
                         if _object:
                             (fields[AUTHOR_COLUMNS[k]['link_table'].__name__][AUTHOR_COLUMNS[k]['link_column']]
                              .append(_object.id))
             else:
-                _object = __process_field(AUTHOR_COLUMNS[k]['table'], 'name', data_row[i].value)
+                _object = __process_field(AUTHOR_COLUMNS[k]['table'], 'name', data_row[i].value.strip())
                 if _object:
                     fields[AUTHOR_COLUMNS[k]['link_table'].__name__][AUTHOR_COLUMNS[k]['link_column']] = _object.id
     if fields:
@@ -156,7 +159,6 @@ def __add_connection(work_person_id, connection):
         for k, v in enumerate(connection):
             if not v.value:
                 return None
-            obj = __process_field(CONNECTION_COLUMNS[k]['table'], 'name', v.value)
             if not CONNECTION_COLUMNS[k]['link_table'].__name__ in fields:
                 fields[CONNECTION_COLUMNS[k]['link_table'].__name__] = dict()
             if CONNECTION_COLUMNS[k]['multiple']:
@@ -169,6 +171,7 @@ def __add_connection(work_person_id, connection):
                             (fields[CONNECTION_COLUMNS[k]['link_table'].__name__][CONNECTION_COLUMNS[k]['link_column']]
                              .append(_object.id))
             else:
+                obj = __process_field(CONNECTION_COLUMNS[k]['table'], 'name', v.value)
                 fields[CONNECTION_COLUMNS[k]['link_table'].__name__][CONNECTION_COLUMNS[k]['link_column']] = obj.id
     if fields:
         _clear_connection(work_person_id)
@@ -211,7 +214,7 @@ def add_data(category, sheet):
     for row in range(sheet.nrows):
         if row == 0:
             continue
-        if sheet.cell(row, 0).value != '':
+        if sheet.cell(row, 0).value.strip() != '':
             work_id = _add_work(category, sheet.row(row))
             _clear_person_work(work_id)
         if work_id:
