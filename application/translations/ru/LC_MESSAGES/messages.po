@@ -25,7 +25,7 @@ msgstr "ПОИСК"
 #: templates/_sidebar.html:7 templates/works/entity.html:2
 #: templates/works/entity_list.html:2 templates/works/entity_list.html:4
 msgid "Titles or Opening Lines"
-msgstr "Название"
+msgstr "Названия"
 
 #: templates/_sidebar.html:10 templates/persons/entity.html:2
 #: templates/persons/entity_list.html:2 templates/persons/entity_list.html:4
