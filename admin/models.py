@@ -43,7 +43,7 @@ class Action(Base):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(50), nullable=False)
+    name = Column(Unicode(255), nullable=False)
 
 
 class Place(Base):
@@ -52,7 +52,7 @@ class Place(Base):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(50), nullable=False)
+    name = Column(Unicode(255), nullable=False)
 
 
 class Title(Base):
@@ -61,7 +61,7 @@ class Title(Base):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(50), nullable=False)
+    name = Column(Unicode(255), nullable=False)
 
 
 class Person(Base):
@@ -70,7 +70,7 @@ class Person(Base):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(50), nullable=False)
+    name = Column(Unicode(255), nullable=False)
 
     def __unicode__(self):
         return self.name
@@ -83,7 +83,7 @@ class Person_Alias(Base):
 
     id = Column(Integer, primary_key=True)
     person_id = Column(Integer, ForeignKey(Person.id), doc='Link to person')
-    name = Column(Unicode(50), nullable=False)
+    name = Column(Unicode(255), nullable=False)
     person = relationship(Person, backref='aliases')
 
 
@@ -93,7 +93,7 @@ class Connection_Type(Base):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(50), nullable=False)
+    name = Column(Unicode(255), nullable=False)
 
 
 class Work_Time(Base):
@@ -102,7 +102,7 @@ class Work_Time(Base):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(50), nullable=False)
+    name = Column(Unicode(255), nullable=False)
 
 
 class Work_Person(Base):

@@ -25,7 +25,7 @@ msgstr "ПОИСК"
 #: templates/_sidebar.html:7 templates/works/entity.html:2
 #: templates/works/entity_list.html:2 templates/works/entity_list.html:4
 msgid "Titles or Opening Lines"
-msgstr "Начальные строки текстов"
+msgstr "Название"
 
 #: templates/_sidebar.html:10 templates/persons/entity.html:2
 #: templates/persons/entity_list.html:2 templates/persons/entity_list.html:4
@@ -111,7 +111,7 @@ msgstr "Результаты поиска"
 
 #: templates/search/result.html:22
 msgid "Title or Opening Lines"
-msgstr "Название или начальные строки"
+msgstr "Название"
 
 #: templates/search/result.html:23 templates/works/entity_list.html:10
 msgid "Toponym"
@@ -123,5 +123,5 @@ msgstr "Concordance"
 
 #: templates/works/entity_list.html:9
 msgid "Title or Opening Lines"
-msgstr "Название или начальные строки"
+msgstr "Название"
 
