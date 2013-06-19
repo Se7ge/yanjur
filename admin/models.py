@@ -87,6 +87,39 @@ class Person_Alias(Base):
     person = relationship(Person, backref='aliases')
 
 
+class Title_Alias(Base):
+    """Mapping for Title_Alias table"""
+    __tablename__ = 'title_alias'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    title_id = Column(Integer, ForeignKey(Title.id), doc='Link to title')
+    name = Column(Unicode(255), nullable=False)
+    title = relationship(Title, backref='aliases')
+
+
+class Place_Alias(Base):
+    """Mapping for Place_Alias table"""
+    __tablename__ = 'place_alias'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    place_id = Column(Integer, ForeignKey(Place.id), doc='Link to place')
+    name = Column(Unicode(255), nullable=False)
+    place = relationship(Place, backref='aliases')
+
+
+class Action_Alias(Base):
+    """Mapping for Action_Alias table"""
+    __tablename__ = 'action_alias'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True)
+    action_id = Column(Integer, ForeignKey(Action.id), doc='Link to Action')
+    name = Column(Unicode(255), nullable=False)
+    action = relationship(Action, backref='aliases')
+
+
 class Connection_Type(Base):
     """Mapping for Connection_Type table"""
     __tablename__ = 'connection_type'

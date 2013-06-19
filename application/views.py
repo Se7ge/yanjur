@@ -100,6 +100,10 @@ def _get_context_links(work_id):
         for title in titles:
             if title.name:
                 result.append(dict(name=title.name, url=url_for('title', id=title.id)))
+            if title.aliases:
+                for alias in title.aliases:
+                    if alias.name:
+                        result.append(dict(name=alias.name, url=url_for('title', id=title.id)))
 
     actions = (session.query(Action)
                .join(Work_Person_Actions)
@@ -110,12 +114,20 @@ def _get_context_links(work_id):
         for action in actions:
             if action.name:
                 result.append(dict(name=action.name, url=url_for('action', id=action.id)))
+            if action.aliases:
+                for alias in action.aliases:
+                    if alias.name:
+                        result.append(dict(name=alias.name, url=url_for('action', id=action.id)))
 
     places = session.query(Place).join(Work_Person).filter(Work_Person.work_id == work_id).all()
     if places:
         for place in places:
             if place.name:
                 result.append(dict(name=place.name, url=url_for('place', id=place.id)))
+            if place.aliases:
+                for alias in place.aliases:
+                    if alias.name:
+                        result.append(dict(name=alias.name, url=url_for('place', id=place.id)))
 
     times = session.query(Work_Time).join(Work_Person).filter(Work_Person.work_id == work_id).all()
     if times:
@@ -159,15 +171,27 @@ def person(id):
     query = (session.query(Title)
              .join(Work_Person_Titles)
              .join(Work_Person)
-             .filter(Work_Person.person_id == id)
-             .order_by(Title.name))
-    for title in query.all():
-        works = (session.query(Work_Person)
-                 .join(Work_Person_Titles)
-                 .join(Work)
-                 .filter(Work_Person_Titles.title_id == title.id, Work_Person.person_id == id)
-                 .order_by(Work.number)
-                 .all())
+             .filter(Work_Person.person_id == id))
+    connection_query = (session.query(Title)
+                        .join(Connection_Titles)
+                        .join(Connection)
+                        .filter(Connection.person_id == id))
+    for title in query.union(connection_query).group_by(Title.id).order_by(Title.name).all():
+        work_query = (session.query(Work_Person)
+                      .join(Work_Person_Titles)
+                      .join(Work)
+                      .filter(Work_Person_Titles.title_id == title.id, Work_Person.person_id == id))
+        connection_work_query = (session.query(Work_Person)
+                                 .join(Connection)
+                                 .join(Connection_Titles)
+                                 .filter(Connection_Titles.title_id == title.id, Connection.person_id == id))
+        # works = (session.query(Work_Person)
+        #          .join(Work_Person_Titles)
+        #          .join(Work)
+        #          .filter(Work_Person_Titles.title_id == title.id, Work_Person.person_id == id)
+        #          .order_by(Work.number)
+        #          .all())
+        works = work_query.union(connection_work_query).join(Work).group_by(Work_Person.id).order_by(Work.number).all()
         person_titles.append(dict(title=title, works=works))
 
     person_actions = list()

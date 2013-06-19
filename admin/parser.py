@@ -4,6 +4,7 @@ from xlrd import open_workbook
 from database import Session
 from admin.models import Action, Connection, Connection_Type, Person, Person_Alias, Place, Title, Work, Work_Categories
 from admin.models import Work_Person, Work_Time, Work_Person_Actions, Work_Person_Titles, Connection_Titles
+from admin.models import Title_Alias, Action_Alias, Place_Alias
 
 # WORK_CATEGORY = 1  # Брать из формы
 
@@ -77,6 +78,7 @@ def _add_work(category, data_row):
 
 
 def __process_field(table, field, value):
+    value = ' '.join(value.split())
     value = value.strip()
     if not value:
         return None
@@ -223,25 +225,29 @@ def add_data(category, sheet):
                 _add_connections(work_person_id, sheet.row(row))
 
 
-def _add_alias(data_row):
-    person_id = None
+def _add_alias(model, alias_model, fk_field, data_row):
+    object_id = None
     for k, v in enumerate(data_row):
-        if not v:
+        v.value = v.value.strip()
+        if not v or not v.value:
             continue
         if k == 0:
-            obj = __process_field(Person, 'name', v.value)
-            person_id = obj.id
-        elif person_id and v.value:
-            obj = __process_field(Person_Alias, 'name', v.value)
-            obj.person_id = person_id
-            session.commit()
+            obj = __process_field(model, 'name', v.value)
+            object_id = obj.id
+        elif object_id and v.value:
+            values = v.value.split(';')
+            for value in values:
+                obj = __process_field(alias_model, 'name', value)
+                if obj:
+                    setattr(obj, fk_field, object_id)
+                    session.commit()
 
 
-def add_aliases(sheet):
+def add_aliases(model, alias_model, fk_field, sheet):
     for row in range(sheet.nrows):
         if row == 0:
             continue
-        _add_alias(sheet.row(row))
+        _add_alias(model, alias_model, fk_field, sheet.row(row))
 
 
 def parse_sheet(category, file_name):
@@ -251,6 +257,12 @@ def parse_sheet(category, file_name):
             if s.number == 0:
                 add_data(category, s)
             elif s.number == 1:
-                add_aliases(s)
+                add_aliases(Person, Person_Alias, 'person_id', s)
+            elif s.number == 2:
+                add_aliases(Title, Title_Alias, 'title_id', s)
+            elif s.number == 3:
+                add_aliases(Place, Place_Alias, 'place_id', s)
+            elif s.number == 4:
+                add_aliases(Action, Action_Alias, 'action_id', s)
 
 # parse_sheet('index3.xlsx')
