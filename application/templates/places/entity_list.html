@@ -1,11 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
     <legend><h3>{{ _('Toponyms') }}</h3></legend>
-    <ol>
-    {% if data %}
-        {% for item in data %}
-        <li><a href="{{ url_for('place', id=item.id) }}">{{ item.name }}</a></li>
-        {% endfor %}
-    {% endif %}
-    </ol>
+    <table class="table table-striped table-condensed">
+        {% if data %}
+            {% for item in data %}
+            <tr>
+                <td class="span4"><a href="{{ url_for('place', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td>
+                    {% if item.works %}
+                    {% for person_work in item.works %}
+                    <a href="{{ url_for('work', id=person_work.work.id) }}" class="label label-inverse" title="{{ person_work.work.name }}">{{ person_work.work.number }}</a>
+                    {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
 {% endblock %}

@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from flask import render_template, abort, request, url_for, json
+from sqlalchemy import distinct
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
 from admin.models import Work_Person_Actions, Connection, Connection_Titles
@@ -34,6 +35,30 @@ def show_article(url):
         return render_template('article.html', article=page)
     else:
         abort(404)
+
+
+@app.route('/places/')
+def places_list():
+    data = session.query(Place).join(Work_Person).join(Work).order_by(Place.name).all()
+    for item in data:
+        exists_works = []
+        for kk, work_person in enumerate(item.works):
+            if work_person.work_id in exists_works:
+                del item.works[kk]
+            exists_works.append(work_person.work_id)
+    return render_template('places/entity_list.html', data=data)
+
+
+@app.route('/times/')
+def places_list():
+    data = session.query(Work_Time).join(Work_Person).join(Work).order_by(Work_Time.name).all()
+    for item in data:
+        exists_works = []
+        for kk, work_person in enumerate(item.works):
+            if work_person.work_id in exists_works:
+                del item.works[kk]
+            exists_works.append(work_person.work_id)
+    return render_template('times/entity_list.html', data=data)
 
 
 @app.route('/<name>/')
