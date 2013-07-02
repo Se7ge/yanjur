@@ -40,12 +40,14 @@ def show_article(url):
 @app.route('/places/')
 def places_list():
     data = session.query(Place).join(Work_Person).join(Work).order_by(Place.name).all()
-    for item in data:
+    for key, item in enumerate(data):
         exists_works = []
+        works = []
         for kk, work_person in enumerate(item.works):
-            if work_person.work_id in exists_works:
-                del item.works[kk]
+            if work_person.work_id not in exists_works:
+                works.append(work_person)
             exists_works.append(work_person.work_id)
+        item.works = works
     return render_template('places/entity_list.html', data=data)
 
 
@@ -54,10 +56,12 @@ def times_list():
     data = session.query(Work_Time).join(Work_Person).join(Work).order_by(Work_Time.name).all()
     for item in data:
         exists_works = []
+        works = []
         for kk, work_person in enumerate(item.works):
-            if work_person.work_id in exists_works:
-                del item.works[kk]
+            if work_person.work_id not in exists_works:
+                works.append(work_person)
             exists_works.append(work_person.work_id)
+        item.works = works
     return render_template('times/entity_list.html', data=data)
 
 
