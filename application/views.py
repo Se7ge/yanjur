@@ -50,7 +50,7 @@ def places_list():
 
 
 @app.route('/times/')
-def places_list():
+def times_list():
     data = session.query(Work_Time).join(Work_Person).join(Work).order_by(Work_Time.name).all()
     for item in data:
         exists_works = []
