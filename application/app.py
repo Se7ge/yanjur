@@ -15,8 +15,7 @@ def get_locale():
 
     if override:
         session['lang'] = override
-
-    return session.get('lang', request.accept_languages.best_match(['ru_RU', 'en_GB']))
+    return session.get('lang', request.accept_languages.best_match(['ru_RU', 'en_EN']))
 
 from application.views import *
 
