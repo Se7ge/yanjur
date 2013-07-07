@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-06-16 18:40+0400\n"
+"POT-Creation-Date: 2013-07-07 23:19+0400\n"
 "PO-Revision-Date: 2013-06-16 18:40+0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -40,6 +40,7 @@ msgstr "Титулатуры"
 
 #: templates/_sidebar.html:16 templates/actions/entity.html:2
 #: templates/actions/entity_list.html:3 templates/persons/entity.html:25
+#: templates/persons/entity.html:83
 msgid "Actions"
 msgstr "Действия"
 
@@ -93,6 +94,14 @@ msgstr "Контакты"
 msgid "Catalogue of the Golden Kanjur"
 msgstr "Каталог &laquo;Золотого Ганджура&raquo;"
 
+#: templates/persons/entity.html:77
+msgid "Connections"
+msgstr "Связи"
+
+#: templates/persons/entity.html:84
+msgid "Personal Name"
+msgstr "Имя"
+
 #: templates/search/index.html:4
 msgid "Search by the Golden Kanjur "
 msgstr "Поиск по каталогу монгольского «Золотого Ганджура»"
@@ -109,7 +118,7 @@ msgstr "Искать"
 msgid "Search results"
 msgstr "Результаты поиска"
 
-#: templates/search/result.html:22
+#: templates/search/result.html:22 templates/works/entity_list.html:9
 msgid "Title or Opening Lines"
 msgstr "Название"
 
@@ -120,8 +129,4 @@ msgstr "Топоним"
 #: templates/search/result.html:24 templates/works/entity_list.html:11
 msgid "Concordance"
 msgstr "Concordance"
-
-#: templates/works/entity_list.html:9
-msgid "Title or Opening Lines"
-msgstr "Название"
 
