@@ -2,13 +2,13 @@
 from flask import Flask, request, session
 from flask.ext.admin import Admin
 from flask.ext.babelex import Babel
-from settings import FLASK_SECRET_KEY
+from settings import SECRET_KEY
 from admin.database import Session
 from admin import views
 
 app = Flask(__name__)
 app.debug = True
-app.secret_key = FLASK_SECRET_KEY
+app.secret_key = SECRET_KEY
 admin = Admin(app, name=u'Администрирование')
 
 # Initialize babel

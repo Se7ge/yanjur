@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-    <legend><h3>{{ article.title }}</h3></legend>
-    <p>{{ article.text|safe }}</p>
+    {% if session.lang == 'en_GB' %}
+        {% set suffix='_en' %}
+    {% else %}
+        {% set suffix='' %}
+    {% endif %}
+    <legend><h3>{{ article|attr('title'+suffix) }}</h3></legend>
+    <p>{{ article|attr('text'+suffix)|safe }}</p>
 {% endblock %}

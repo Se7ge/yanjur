@@ -83,9 +83,13 @@ class Work_TimeAdmin(ModelView):
 
 
 class Pages_Admin(ModelView):
-    column_labels = dict(title=u'Заголовок', text=u'Текст статьи', url=u'URL-адрес страницы')
+    column_labels = dict(title=u'Заголовок',
+                         title_en=u'Заголовок (English)',
+                         text=u'Текст статьи',
+                         text_en=u'Текст статьи (English)',
+                         url=u'URL-адрес страницы')
     column_list = ('title', 'url')
-    form_overrides = dict(text=CKTextAreaField)
+    form_overrides = dict(text=CKTextAreaField, text_en=CKTextAreaField)
 
     create_template = 'create.html'
     edit_template = 'edit.html'

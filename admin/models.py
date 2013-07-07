@@ -213,5 +213,7 @@ class Pages(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(Unicode(100), nullable=False)
+    title_en = Column(Unicode(100), nullable=True)
     text = Column(UnicodeText)
+    text_en = Column(UnicodeText)
     url = Column(Unicode(50), nullable=False)
