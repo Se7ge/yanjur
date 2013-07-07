@@ -73,3 +73,12 @@ a.label-inverse:hover{
     margin-bottom: 20px;
     min-height: 20px;
 }
+
+.flag {
+	width: 18px;
+	height: 12px;
+	background:url(/static/img/flags.png) no-repeat
+}
+
+.flag.flag-gb {background-position: -18px 0}
+.flag.flag-ru {background-position: 0 -12px}

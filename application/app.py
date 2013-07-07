@@ -1,24 +1,22 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, g
+from flask import Flask, g, request, session
 from flask.ext.babelex import Babel
-from settings import DEBUG
+import settings
 from admin.database import shutdown_session, Session
 
 app = Flask(__name__)
-app.debug = DEBUG
+app.config.from_object(settings)
 babel = Babel(app)
 
 
 @babel.localeselector
 def get_locale():
-    # # if a user is logged in, use the locale from the user settings
-    # user = getattr(g, 'user', None)
-    # if user is not None:
-    #     return user.locale
-    # otherwise try to guess the language from the user accept
-    # header the browser transmits.  We support de/fr/en in this
-    # example.  The best match wins.
-    return request.accept_languages.best_match(['ru_RU', 'en_EN'])
+    override = request.args.get('lang')
+
+    if override:
+        session['lang'] = override
+
+    return session.get('lang', request.accept_languages.best_match(['ru_RU', 'en_GB']))
 
 from application.views import *
 
