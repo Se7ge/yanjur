@@ -32,7 +32,7 @@ admin.add_view(views.ActionsAdmin(Session, name=u'Действия', category=u'
 admin.add_view(views.PlaceAdmin(Session, name=u'Местоположения', category=u'Справочники'))
 admin.add_view(views.Work_TimeAdmin(Session, name=u'Периоды времени', category=u'Справочники'))
 admin.add_view(views.Work_CategoriesAdmin(Session, name=u'Сборники', category=u'Справочники'))
-admin.add_view(views.Connection_TypeAdmin(Session, name=u'Типы сотрудничества', category=u'Справочники'))
+# admin.add_view(views.Connection_ActionAdmin(Session, name=u'Типы сотрудничества', category=u'Справочники'))
 admin.add_view(views.TitlesAdmin(Session, name=u'Титулы', category=u'Справочники'))
 admin.add_view(views.UploadAdmin(name=u'Загрузка данных'))
 

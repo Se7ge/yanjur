@@ -4,7 +4,7 @@ from xlrd import open_workbook
 from database import Session
 from admin.models import Action, Connection, Connection_Type, Person, Person_Alias, Place, Title, Work, Work_Categories
 from admin.models import Work_Person, Work_Time, Work_Person_Actions, Work_Person_Titles, Connection_Titles
-from admin.models import Title_Alias, Action_Alias, Place_Alias
+from admin.models import Title_Alias, Action_Alias, Place_Alias, Connection_Actions
 
 # WORK_CATEGORY = 1  # Брать из формы
 
@@ -22,9 +22,14 @@ AUTHOR_COLUMNS = [
     dict(table=Place, column='name', link_column='place_id', link_table=Work_Person, multiple=False)]
 
 CONNECTION_COLUMNS = [
-    dict(table=Connection_Type, column='name', link_column='connect_type_id', link_table=Connection, multiple=False),
+    dict(table=Action, column='name', link_column='action_id', link_table=Connection_Actions, multiple=True),
     dict(table=Person, column='name', link_column='person_id', link_table=Connection, multiple=False),
     dict(table=Title, column='name', link_column='title_id', link_table=Connection_Titles, multiple=True)]
+
+ALIAS_MODELS = {Person.__name__: Person_Alias,
+                Title.__name__: Title_Alias,
+                Place.__name__: Place_Alias,
+                Action.__name__: Action_Alias}
 
 session = Session()
 
@@ -43,7 +48,11 @@ def _get_author(name):
 
 
 def _get_object(_class, column, value):
-    return session.query(_class).filter_by(**{column: value.strip()}).first()
+    obj = session.query(_class).filter_by(**{column: value.strip()}).first()
+    if not obj and _class.__name__ in ALIAS_MODELS:
+        alias_obj = session.query(ALIAS_MODELS.get(_class.__name__)).filter_by(**{column: value.strip()}).first()
+        obj = getattr(alias_obj, _class.__name__, None)
+    return obj
 
 
 def _add_object(_class, column, value):

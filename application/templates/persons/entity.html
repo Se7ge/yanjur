@@ -72,4 +72,49 @@
             {% endfor %}
         {% endif %}
     </table>
+        {% if connections or backward_connections %}
+            <hr>
+            <h4>{{ _('Connections') }}</h4>
+            <tr class="warning">
+                <td colspan="2">
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                            <tr>
+                                <th>{{ _('Actions') }}</th>
+                                <th>{{ _('Personal Name') }}</th>
+                                <th>#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in connections %}
+                            <tr>
+                                <td>
+                                    {% if item.actions %}
+                                    {% for action in item.actions %}
+                                    <a href="{{ url_for('action', id=action.id) }}" title="{{ action.name }}">{{ action.name }}</a>
+                                    {% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                </td>
+                                <td><a href="{{ url_for('person', id=item.person.id) }}" title="{{ item.person.name }}">{{ item.person.name }}</a></td>
+                                <td><a href="{{ url_for('work', id=item.work_person.work.id) }}" class="label label-inverse" title="{{ item.work_person.work.name }}">{{ item.work_person.work.number }}</a></td>
+                            </tr>
+                        {% endfor %}
+                        {% for item in backward_connections %}
+                            <tr>
+                                <td>
+                                    {% if item.actions %}
+                                    {% for action in item.actions %}
+                                    <a href="{{ url_for('action', id=action.id) }}" title="{{ action.name }}">{{ action.name }}</a>
+                                    {% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                </td>
+                                <td><a href="{{ url_for('person', id=item.person.id) }}" title="{{ item.person.name }}">{{ item.person.name }}</a></td>
+                                <td><a href="{{ url_for('work', id=item.work.id) }}" class="label label-inverse" title="{{ item.work.name }}">{{ item.work.number }}</a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+        {% endif %}
 {% endblock %}

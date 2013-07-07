@@ -9,7 +9,7 @@ from admin.database import Session
 from werkzeug import secure_filename
 
 from admin.models import Action, Person, Person_Alias, Place, Work_Categories, Work_Person, Work, Title, Pages
-from admin.models import Connection_Type, Connection, Work_Time
+from admin.models import Connection_Type, Connection, Work_Time, Connection_Actions
 from admin.ckedit import CKTextAreaField
 from settings import UPLOAD_FOLDER
 from parser import parse_sheet
@@ -68,11 +68,11 @@ class PlaceAdmin(ModelView):
         super(PlaceAdmin, self).__init__(Place, session, **kwargs)
 
 
-class Connection_TypeAdmin(ModelView):
+class Connection_ActionAdmin(ModelView):
     column_labels = dict(name=u'Название типа сотрудничества')
 
     def __init__(self, session, **kwargs):
-        super(Connection_TypeAdmin, self).__init__(Connection_Type, session, **kwargs)
+        super(Connection_ActionAdmin, self).__init__(Connection_Actions, session, **kwargs)
 
 
 class Work_TimeAdmin(ModelView):

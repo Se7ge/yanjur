@@ -150,9 +150,9 @@ class Work_Person(Base):
     time_id = Column(Integer, ForeignKey(Work_Time.id))
 
     work = relationship(Work)
-    # person = relationship(Person, backref='works')
+    person = relationship(Person, backref='works')
     # titles = relationship(Title, secondary='work_person_titles', backref='works')
-    # actions = relationship(Action, secondary='work_person_actions', backref='works')
+    actions = relationship(Action, secondary='work_person_actions', backref='works')
     times = relationship(Work_Time, backref='works')
     places = relationship(Place, backref='works')
 
@@ -182,12 +182,23 @@ class Connection(Base):
 
     id = Column(Integer, primary_key=True)
     work_person_id = Column(Integer, ForeignKey(Work_Person.id), nullable=False)
-    connect_type_id = Column(Integer, ForeignKey(Connection_Type.id), nullable=False)
     person_id = Column(Integer, ForeignKey(Person.id), nullable=False)
+    work_person = relationship(Work_Person)
+    person = relationship(Person)
+    actions = relationship(Action, secondary='connection_actions')
+
+
+class Connection_Actions(Base):
+    """Mapping for Connection_Actions table"""
+    __tablename__ = 'connection_actions'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    connection_id = Column(Integer, ForeignKey(Connection.id), primary_key=True)
+    action_id = Column(Integer, ForeignKey(Action.id), primary_key=True)
 
 
 class Connection_Titles(Base):
-    """Mapping for Work_Person_Titles table"""
+    """Mapping for Connection_Titles table"""
     __tablename__ = 'connection_titles'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 

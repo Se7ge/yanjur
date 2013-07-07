@@ -7,7 +7,13 @@
         {% if data.colophon %}<p>{{ data.colophon }}</p>{% endif %}
         {% if data.location %}<p>{{ data.location }}</p>{% endif %}
     </div>
-    {% if data.concordance %}<p>{{ data.concordance }}</p>{% endif %}
+    {% if concordance %}{% endif %}
+    <p>
+    {% for item in concordance %}
+        <a href="{{ url_for('work', id=item.id) }}" class="label label-inverse" title="{{ item.name }}">{{ item.number }}</a>
+    {% endfor %}
+    </p>
+    {% if data.concordance and not concordance %}<p>{{ data.concordance }}</p>{% endif %}
 {% endblock %}
 {% block added_js %}
 <script type="text/javascript">

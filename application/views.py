@@ -3,7 +3,7 @@ from flask import render_template, abort, request, url_for, json
 from sqlalchemy import distinct
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
-from admin.models import Work_Person_Actions, Connection, Connection_Titles
+from admin.models import Work_Person_Actions, Connection, Connection_Titles, Connection_Actions
 from admin.database import Session
 from application.context_processors import sidebar_menu
 from settings import SEARCHD_CONNECTION
@@ -98,10 +98,17 @@ def work(id):
     work = session.query(Work).get(id)
     if work:
         context_links = _get_context_links(id)
+
+        concordances = work.concordance.split(';')
+        if not isinstance(concordances, list):
+            concordances = list(concordances)
+        concordance_works = session.query(Work).filter(Work.number.in_(map(lambda x: x.strip(), concordances))).all()
+
         return render_template('works/entity.html',
                                entity='work',
                                entity_id=id,
                                data=work,
+                               concordance=concordance_works,
                                links=context_links)
     else:
         abort(404)
@@ -264,6 +271,12 @@ def person(id):
                  .all())
         person_places.append(dict(place=place, works=works))
 
+    connections = (session.query(Connection)
+                   .join(Work_Person)
+                   .filter(Work_Person.person_id == id)
+                   .all())
+    backward_connections = (session.query(Work_Person).join(Connection).filter(Connection.person_id == id).all())
+
     if person:
         return render_template('persons/entity.html',
                                entity='person',
@@ -272,7 +285,9 @@ def person(id):
                                person_titles=person_titles,
                                person_actions=person_actions,
                                person_times=person_times,
-                               person_places=person_places,)
+                               person_places=person_places,
+                               connections=connections,
+                               backward_connections=backward_connections)
     else:
         abort(404)
 
@@ -284,15 +299,20 @@ def title(id):
     query = (session.query(Person)
              .join(Work_Person)
              .join(Work_Person_Titles)
-             .filter(Work_Person_Titles.title_id == id)
-             .order_by(Person.name))
-    for person in query.all():
-        works = (session.query(Work_Person)
-                 .join(Work_Person_Titles)
-                 .join(Work)
-                 .filter(Work_Person_Titles.title_id == id, Work_Person.person_id == person.id)
-                 .order_by(Work.number)
-                 .all())
+             .filter(Work_Person_Titles.title_id == id))
+    connection_query = (session.query(Person)
+                        .join(Connection)
+                        .join(Connection_Titles)
+                        .filter(Connection_Titles.title_id == id))
+    for person in query.union(connection_query).group_by(Person.id).order_by(Person.name).all():
+        work_query = (session.query(Work_Person)
+                      .join(Work_Person_Titles)
+                      .filter(Work_Person_Titles.title_id == id, Work_Person.person_id == person.id))
+        work_connection_query = (session.query(Work_Person)
+                                 .join(Connection)
+                                 .join(Connection_Titles)
+                                 .filter(Connection_Titles.title_id == id, Connection.person_id == person.id))
+        works = work_query.union(work_connection_query).join(Work).order_by(Work.number).all()
         person_titles.append(dict(person=person, works=works))
 
     if title:
@@ -312,15 +332,20 @@ def action(id):
     query = (session.query(Person)
              .join(Work_Person)
              .join(Work_Person_Actions)
-             .filter(Work_Person_Actions.action_id == id)
-             .order_by(Person.name))
-    for person in query.all():
-        works = (session.query(Work_Person)
-                 .join(Work_Person_Actions)
-                 .join(Work)
-                 .filter(Work_Person_Actions.action_id == id, Work_Person.person_id == person.id)
-                 .order_by(Work.number)
-                 .all())
+             .filter(Work_Person_Actions.action_id == id))
+    connection_query = (session.query(Person)
+                        .join(Connection)
+                        .join(Connection_Actions)
+                        .filter(Connection_Actions.action_id == id))
+    for person in query.union(connection_query).group_by(Person.id).order_by(Person.name).all():
+        work_query = (session.query(Work_Person)
+                      .join(Work_Person_Actions)
+                      .filter(Work_Person_Actions.action_id == id, Work_Person.person_id == person.id))
+        work_connection_query = (session.query(Work_Person)
+                                 .join(Connection)
+                                 .join(Connection_Actions)
+                                 .filter(Connection_Actions.action_id == id, Connection.person_id == person.id))
+        works = work_query.union(work_connection_query).join(Work).order_by(Work.number).all()
         person_actions.append(dict(person=person, works=works))
     if action:
         return render_template('actions/entity.html',
