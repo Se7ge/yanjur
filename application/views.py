@@ -278,7 +278,7 @@ def person(id):
                    .join(Work_Person)
                    .filter(Work_Person.person_id == id)
                    .all())
-    backward_connections = (session.query(Work_Person).join(Connection).filter(Connection.person_id == id).all())
+    backward_connections = (session.query(Connection).filter(Connection.person_id == id).all())
 
     if person:
         return render_template('persons/entity.html',

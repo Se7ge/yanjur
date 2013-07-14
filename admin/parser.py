@@ -99,6 +99,8 @@ def __process_field(table, field, value):
 
 
 def _clear_person_work(work_id):
+    # Чистим для того, чтобы данные были консистентными, т.к. если Action и Title сохранились, а автор изменился,
+    # то будет ссылка на удалённый Work_Person
     for work_person in session.query(Work_Person).filter(Work_Person.work_id == work_id).all():
         _clear_connection(work_person.id)
         session.query(Work_Person_Actions).filter(Work_Person_Actions.work_person_id == work_person.id).delete()
@@ -154,6 +156,7 @@ def _add_author(work_id, data_row):
                             setattr(_obj, 'work_person_id', work_person.id)
                             session.add(_obj)
                             session.commit()
+        if work_person:
             return work_person.id
 
 
@@ -168,7 +171,7 @@ def __add_connection(work_person_id, connection):
     fields = dict()
     if connection:
         for k, v in enumerate(connection):
-            if not v.value:
+            if k == 0 and not v.value:
                 return None
             if not CONNECTION_COLUMNS[k]['link_table'].__name__ in fields:
                 fields[CONNECTION_COLUMNS[k]['link_table'].__name__] = dict()
@@ -185,7 +188,6 @@ def __add_connection(work_person_id, connection):
                 obj = __process_field(CONNECTION_COLUMNS[k]['table'], 'name', v.value)
                 fields[CONNECTION_COLUMNS[k]['link_table'].__name__][CONNECTION_COLUMNS[k]['link_column']] = obj.id
     if fields:
-        _clear_connection(work_person_id)
         fields[Connection.__name__]['work_person_id'] = work_person_id
         connection = None
         if fields[Connection.__name__]:

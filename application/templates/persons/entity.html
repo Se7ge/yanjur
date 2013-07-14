@@ -110,8 +110,8 @@
                                     {% endfor %}
                                     {% endif %}
                                 </td>
-                                <td><a href="{{ url_for('person', id=item.person.id) }}" title="{{ item.person.name }}">{{ item.person.name }}</a></td>
-                                <td><a href="{{ url_for('work', id=item.work.id) }}" class="label label-inverse" title="{{ item.work.name }}">{{ item.work.number }}</a></td>
+                                <td><a href="{{ url_for('person', id=item.work_person.person.id) }}" title="{{ item.work_person.person.name }}">{{ item.work_person.person.name }}</a></td>
+                                <td><a href="{{ url_for('work', id=item.work_person.work.id) }}" class="label label-inverse" title="{{ item.work_person.work.name }}">{{ item.work_person.work.number }}</a></td>
                             </tr>
                         {% endfor %}
                         </tbody>
