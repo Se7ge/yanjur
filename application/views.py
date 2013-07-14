@@ -69,7 +69,10 @@ def times_list():
 def entity_list(name):
     order_by = 'name'
     if name == 'works':
-        order_by = 'number+0<>0 DESC, number+0'
+        order_by = '''
+        SUBSTRING_INDEX(number, ' ', 1),
+        LENGTH(SUBSTRING_INDEX(number, '(', 1)),
+        SUBSTRING_INDEX(number, '(', 1)'''
     data = session.query(ENTITIES[name]).order_by(order_by).all()
     return render_template('%s/entity_list.html' % name, data=data)
 
