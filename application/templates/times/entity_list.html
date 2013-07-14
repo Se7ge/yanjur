@@ -5,7 +5,7 @@
         {% if data %}
             {% for item in data %}
             <tr>
-                <td class="span4"><a href="{{ url_for('time', id=item.id) }}" title="{{ item.name }}">{{ item.name }}</a></td>
+                <td class="span4">{{ item.name }}</td>
                 <td>
                     {% if item.works %}
                     {% for person_work in item.works %}
