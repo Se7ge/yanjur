@@ -57,7 +57,7 @@ def _get_object(_class, column, value):
 
 def _add_object(_class, column, value):
     obj = _class()
-    setattr(obj, column, value.strip())
+    setattr(obj, column, ' '.join(value.split()).strip())
     session.add(obj)
     session.commit()
     return obj
