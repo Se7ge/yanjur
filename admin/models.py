@@ -94,7 +94,7 @@ class Title_Alias(Base):
 
     id = Column(Integer, primary_key=True)
     title_id = Column(Integer, ForeignKey(Title.id), doc='Link to title')
-    name = Column(Unicode(255), nullable=False)
+    name = Column(Unicode(255, collation='utf8_bin'), nullable=False)
     title = relationship(Title, backref='aliases')
 
 

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from flask import render_template, abort, request, url_for, json
-from sqlalchemy import distinct
+from sqlalchemy import func, or_, desc
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
 from admin.models import Work_Person_Actions, Connection, Connection_Titles, Connection_Actions
@@ -120,84 +120,107 @@ def work(id):
 def _get_context_links(work_id):
     result = list()
 
-    persons = session.query(Person).join(Work_Person).filter(Work_Person.work_id == work_id).all()
-    if persons:
-        for person in persons:
-            if person.name:
-                result.append(dict(name=person.name, url=url_for('person', id=person.id)))
-            if person.aliases:
-                for alias in person.aliases:
-                    if alias.name:
-                        result.append(dict(name=alias.name, url=url_for('person', id=person.id)))
-
-    titles = (session.query(Title)
-              .join(Work_Person_Titles)
-              .join(Work_Person)
-              .filter(Work_Person.work_id == work_id)
-              .all())
-    if titles:
-        for title in titles:
-            if title.name:
-                result.append(dict(name=title.name, url=url_for('title', id=title.id)))
-            if title.aliases:
-                for alias in title.aliases:
-                    if alias.name:
-                        result.append(dict(name=alias.name, url=url_for('title', id=title.id)))
-
-    actions = (session.query(Action)
-               .join(Work_Person_Actions)
-               .join(Work_Person)
-               .filter(Work_Person.work_id == work_id)
-               .all())
-    if actions:
-        for action in actions:
-            if action.name:
-                result.append(dict(name=action.name, url=url_for('action', id=action.id)))
-            if action.aliases:
-                for alias in action.aliases:
-                    if alias.name:
-                        result.append(dict(name=alias.name, url=url_for('action', id=action.id)))
-
-    places = session.query(Place).join(Work_Person).filter(Work_Person.work_id == work_id).all()
-    if places:
-        for place in places:
-            if place.name:
-                result.append(dict(name=place.name, url=url_for('place', id=place.id)))
-            if place.aliases:
-                for alias in place.aliases:
-                    if alias.name:
-                        result.append(dict(name=alias.name, url=url_for('place', id=place.id)))
-
-    times = session.query(Work_Time).join(Work_Person).filter(Work_Person.work_id == work_id).all()
-    if times:
-        for time in times:
-            if time.name:
-                result.append(dict(name=time.name, url=url_for('time', id=time.id)))
-
+    persons_query = session.query(Person).join(Work_Person).filter(Work_Person.work_id == work_id)
     connection_persons = (session.query(Person)
                           .join(Connection)
                           .join(Work_Person)
-                          .filter(Work_Person.work_id == work_id)
-                          .all())
-    if connection_persons:
-        for person in connection_persons:
-            if person.name:
+                          .filter(Work_Person.work_id == work_id))
+
+    persons = persons_query.union(connection_persons).group_by(Person.id).order_by(desc(func.length(Person.name))).all()
+    if persons:
+        _exists = []
+        for person in persons:
+            if person.name and person.name not in _exists:
+                _exists.append(person.name)
                 result.append(dict(name=person.name, url=url_for('person', id=person.id)))
+                # result.update({person.name: url_for('person', id=person.id)})
             if person.aliases:
                 for alias in person.aliases:
-                    if alias.name:
-                        result.append(dict(name=person.name, url=url_for('person', id=person.id)))
+                    if alias.name and alias.name not in _exists:
+                        _exists.append(alias.name)
+                        result.append(dict(name=alias.name, url=url_for('person', id=person.id)))
+                        # result.update({alias.name: url_for('person', id=person.id)})
+
+    titles_query = (session.query(Title)
+                    .join(Work_Person_Titles)
+                    .join(Work_Person)
+                    .filter(Work_Person.work_id == work_id))
 
     connection_titles = (session.query(Title)
                          .join(Connection_Titles)
                          .join(Connection)
                          .join(Work_Person)
-                         .filter(Work_Person.work_id == work_id)
-                         .all())
-    if connection_titles:
-        for title in connection_titles:
-            if title.name:
+                         .filter(Work_Person.work_id == work_id))
+    titles = titles_query.union(connection_titles).group_by(Title.id).order_by(desc(func.length(Title.name))).all()
+    if titles:
+        _exists = []
+        for title in titles:
+            if title.name and title.name not in _exists:
+                _exists.append(title.name)
+                # result.update({title.name: url_for('title', id=title.id)})
                 result.append(dict(name=title.name, url=url_for('title', id=title.id)))
+            if title.aliases:
+                for alias in title.aliases:
+                    if alias.name and alias.name not in _exists:
+                        _exists.append(alias.name)
+                        # result.update({alias.name: url_for('title', id=title.id)})
+                        result.append(dict(name=alias.name, url=url_for('title', id=title.id)))
+
+    actions_query = (session.query(Action)
+                     .join(Work_Person_Actions)
+                     .join(Work_Person)
+                     .filter(Work_Person.work_id == work_id))
+    connection_actions = (session.query(Action)
+                          .join(Connection_Actions)
+                          .join(Connection)
+                          .join(Work_Person)
+                          .filter(Work_Person.work_id == work_id))
+    actions = actions_query.union(connection_actions).group_by(Action.id).order_by(desc(func.length(Action.name))).all()
+    if actions:
+        _exists = []
+        for action in actions:
+            if action.name and action.name not in _exists:
+                _exists.append(action.name)
+                # result.update({action.name: url_for('action', id=action.id)})
+                result.append(dict(name=action.name, url=url_for('action', id=action.id)))
+            if action.aliases:
+                for alias in action.aliases:
+                    if alias.name and alias.name not in _exists:
+                        _exists.append(alias.name)
+                        # result.update({alias.name: url_for('action', id=action.id)})
+                        result.append(dict(name=alias.name, url=url_for('action', id=action.id)))
+
+    places = (session.query(Place)
+              .join(Work_Person)
+              .filter(Work_Person.work_id == work_id)
+              .order_by(desc(func.length(Place.name)))
+              .all())
+    if places:
+        _exists = []
+        for place in places:
+            if place.name and place.name not in _exists:
+                _exists.append(place.name)
+                # result.update({place.name: url_for('place', id=place.id)})
+                result.append(dict(name=place.name, url=url_for('place', id=place.id)))
+            if place.aliases:
+                for alias in place.aliases:
+                    if alias.name and alias.name not in _exists:
+                        _exists.append(alias.name)
+                        # result.update({alias.name: url_for('place', id=place.id)})
+                        result.append(dict(name=alias.name, url=url_for('place', id=place.id)))
+
+    times = (session.query(Work_Time)
+             .join(Work_Person)
+             .filter(Work_Person.work_id == work_id)
+             .order_by(desc(func.length(Work_Time.name)))
+             .all())
+    if times:
+        _exists = []
+        for time in times:
+            if time.name and time.name not in _exists:
+                _exists.append(time.name)
+                # result.update({time.name: url_for('time', id=time.id)})
+                result.append(dict(name=time.name, url=url_for('time', id=time.id)))
 
     return result
 
@@ -340,14 +363,25 @@ def action(id):
                         .join(Connection)
                         .join(Connection_Actions)
                         .filter(Connection_Actions.action_id == id))
-    for person in query.union(connection_query).group_by(Person.id).order_by(Person.name).all():
+    backward_connection_query = (session.query(Person)
+                                 .join(Work_Person)
+                                 .join(Connection)
+                                 .join(Connection_Actions)
+                                 .filter(Connection_Actions.action_id == id))
+    persons = (query.union(connection_query).union(backward_connection_query)
+               .group_by(Person.id)
+               .order_by(Person.name)
+               .all())
+    for person in persons:
         work_query = (session.query(Work_Person)
                       .join(Work_Person_Actions)
                       .filter(Work_Person_Actions.action_id == id, Work_Person.person_id == person.id))
         work_connection_query = (session.query(Work_Person)
                                  .join(Connection)
                                  .join(Connection_Actions)
-                                 .filter(Connection_Actions.action_id == id, Connection.person_id == person.id))
+                                 .filter(Connection_Actions.action_id == id,
+                                         or_(Connection.person_id == person.id,
+                                             Work_Person.person_id == person.id)))
         works = work_query.union(work_connection_query).join(Work).order_by(Work.number).all()
         person_actions.append(dict(person=person, works=works))
     if action:

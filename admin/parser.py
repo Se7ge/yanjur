@@ -67,22 +67,25 @@ def _add_work(category, data_row):
     objects = dict()
     object_id = None
     for i in range(len(WORK_COLUMNS)):
-        if data_row[i].value.strip():
+        value = ' '.join(data_row[i].value.split()).strip()
+        if value:
             table_name = WORK_COLUMNS[i]['table'].__name__
             if i == 0 and table_name == Work.__name__:
                 work_obj = _get_work(category, data_row[i].value.strip())
+                if not work_obj:
+                    work_obj = _get_work(category, value)
                 if work_obj:
                     objects[table_name] = work_obj
             if table_name not in objects:
                 objects[table_name] = WORK_COLUMNS[i]['table']()
-            setattr(objects[table_name], WORK_COLUMNS[i]['column'], data_row[i].value.strip())
+            setattr(objects[table_name], WORK_COLUMNS[i]['column'], value)
     setattr(objects[Work.__name__], 'category_id', category)
     if objects:
         for obj in objects.values():
             if not getattr(obj, 'id', None):
                 session.add(obj)
-                session.commit()
             object_id = obj.id
+    session.commit()
     return object_id
 
 

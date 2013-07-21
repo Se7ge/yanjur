@@ -24,13 +24,37 @@ RegExp.escape = function(str) {
 $(document).ready(function(){
     var content = $('#work_data').html();
     for (var i in links){
-        var find_re = new RegExp("[^>](" + RegExp.escape(links[i].name) + ")[^<]", 'gi');
-        var re = new RegExp("(" + RegExp.escape(links[i].name) + ")", 'gi');
-        if(find_re.test(content)){
-            content = content.replace(re, '<a href="' + links[i].url + '">$1</a>');
-        }
+        content = _parse_link(links[i], content);
     }
-    $('#work_data').html(content)
+    $('#work_data').html(content);
 });
+function _parse_link(link, text){
+    var escaped_name = RegExp.escape(link.name);
+    var name = new RegExp(escaped_name, 'gi');
+    var res;
+    while ((res = name.exec(text)) != null){
+        if (res && name.lastIndex > -1){
+            var index = name.lastIndex;
+            if (_check_link(index, text)){
+                text = _replace(link, index, text);
+            }
+        }
+	}
+    return text;
+}
+function _replace(link, index, text){
+    var start = index - link.name.length;
+    text = text.substring(0, start) + '<a href="' + link.url + '">' + link.name + '</a>' + text.substring(index);
+    return text;
+}
+function _check_link(index, text){
+    var open_a = text.lastIndexOf('<a', index-1);
+    var close_a = text.lastIndexOf('</a>', index-1);
+    if (open_a == -1 || open_a < close_a){
+        return true;
+    } else {
+        return false;
+    }
+}
 </script>
 {% endblock %}
