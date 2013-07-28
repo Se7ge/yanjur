@@ -45,6 +45,9 @@ class Action(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), nullable=False)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Place(Base):
     """Mapping for Place table"""
@@ -54,6 +57,9 @@ class Place(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), nullable=False)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Title(Base):
     """Mapping for Title table"""
@@ -62,6 +68,9 @@ class Title(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), nullable=False)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Person(Base):

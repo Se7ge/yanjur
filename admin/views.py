@@ -9,7 +9,7 @@ from admin.database import Session
 from werkzeug import secure_filename
 
 from admin.models import Action, Person, Person_Alias, Place, Work_Categories, Work_Person, Work, Title, Pages
-from admin.models import Connection_Type, Connection, Work_Time, Connection_Actions
+from admin.models import Title_Alias, Connection, Work_Time, Connection_Actions, Action_Alias, Place_Alias
 from admin.ckedit import CKTextAreaField
 from settings import UPLOAD_FOLDER
 from parser import parse_sheet
@@ -38,6 +38,33 @@ class Person_AliasAdmin(ModelView):
 
     def __init__(self, session, **kwargs):
         super(Person_AliasAdmin, self).__init__(Person_Alias, session, **kwargs)
+
+
+class Action_AliasAdmin(ModelView):
+    column_labels = dict(action=u'Действие', name=u'Синоним')
+    form_columns = ('action', 'name')
+    column_list = ('action', 'name')
+
+    def __init__(self, session, **kwargs):
+        super(Action_AliasAdmin, self).__init__(Action_Alias, session, **kwargs)
+
+
+class Place_AliasAdmin(ModelView):
+    column_labels = dict(place=u'Топоним', name=u'Синоним')
+    form_columns = ('place', 'name')
+    column_list = ('place', 'name')
+
+    def __init__(self, session, **kwargs):
+        super(Place_AliasAdmin, self).__init__(Place_Alias, session, **kwargs)
+
+
+class Title_AliasAdmin(ModelView):
+    column_labels = dict(title=u'Титул', name=u'Синоним')
+    form_columns = ('title', 'name')
+    column_list = ('title', 'name')
+
+    def __init__(self, session, **kwargs):
+        super(Title_AliasAdmin, self).__init__(Title_Alias, session, **kwargs)
 
 
 class Work_CategoriesAdmin(ModelView):

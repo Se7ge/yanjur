@@ -26,8 +26,11 @@ def get_locale():
 
 admin.add_view(views.Pages_Admin(Session, name=u'Статьи'))
 admin.add_view(views.Work_Admin(Session, name=u'Сочинения'))
-admin.add_view(views.Person_Admin(Session, name=u'Авторы', category=u'Авторы'))
-admin.add_view(views.Person_AliasAdmin(Session, name=u'Псевдонимы авторов', category=u'Авторы'))
+admin.add_view(views.Person_Admin(Session, name=u'Авторы', category=u'Справочники'))
+admin.add_view(views.Person_AliasAdmin(Session, name=u'Псевдонимы авторов', category=u'Синонимы'))
+admin.add_view(views.Action_AliasAdmin(Session, name=u'Синонимы действий', category=u'Синонимы'))
+admin.add_view(views.Title_AliasAdmin(Session, name=u'Синонимы титулов', category=u'Синонимы'))
+admin.add_view(views.Place_AliasAdmin(Session, name=u'Синонимы топонимов', category=u'Синонимы'))
 admin.add_view(views.ActionsAdmin(Session, name=u'Действия', category=u'Справочники'))
 admin.add_view(views.PlaceAdmin(Session, name=u'Местоположения', category=u'Справочники'))
 admin.add_view(views.Work_TimeAdmin(Session, name=u'Периоды времени', category=u'Справочники'))

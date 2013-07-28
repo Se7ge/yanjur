@@ -3,7 +3,7 @@ from flask import render_template, abort, request, url_for, json
 from sqlalchemy import func, or_, desc
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
-from admin.models import Work_Person_Actions, Connection, Connection_Titles, Connection_Actions
+from admin.models import Work_Person_Actions, Connection, Connection_Titles, Connection_Actions, Title_Alias
 from admin.database import Session
 from application.context_processors import sidebar_menu
 from settings import SEARCHD_CONNECTION
@@ -98,6 +98,7 @@ def search():
 
 @app.route('/work/<int:id>.html')
 def work(id):
+    title_aliases = session.query(Title_Alias).all()
     work = session.query(Work).get(id)
     if work:
         context_links = _get_context_links(id)
@@ -227,7 +228,7 @@ def _get_context_links(work_id):
 
 @app.route('/person/<int:id>.html')
 def person(id):
-    person = session.query(Person).get(id)
+    current_person = session.query(Person).get(id)
 
     person_titles = list()
     query = (session.query(Title)
@@ -301,17 +302,46 @@ def person(id):
                    .join(Work_Person)
                    .filter(Work_Person.person_id == id)
                    .all())
+
     backward_connections = (session.query(Connection).filter(Connection.person_id == id).all())
 
-    if person:
+    connect_data = dict()
+    for item in connections:
+        if item.person.id not in connect_data:
+            connect_data[item.person.id] = dict()
+        action_ids = list()
+        for action in item.actions:
+            action_ids.append(str(action.id))
+        actions_key = '_'.join(action_ids)
+        if actions_key not in connect_data[item.person.id]:
+            connect_data[item.person.id]['_'.join(action_ids)] = dict(person=item.person,
+                                                                      actions=item.actions,
+                                                                      works=list())
+        connect_data[item.person.id]['_'.join(action_ids)]['works'].append(item.work_person.work)
+    for item in backward_connections:
+        person = item.work_person.person
+        if person.id not in connect_data:
+            connect_data[person.id] = dict()
+        action_ids = list()
+        for action in item.actions:
+            action_ids.append(str(action.id))
+        actions_key = '_'.join(action_ids)
+        if actions_key not in connect_data[person.id]:
+            connect_data[person.id]['_'.join(action_ids)] = dict(person=person,
+                                                                 actions=item.actions,
+                                                                 works=list())
+        connect_data[person.id]['_'.join(action_ids)]['works'].append(item.work_person.work)
+
+    if current_person:
         return render_template('persons/entity.html',
                                entity='person',
                                entity_id=id,
-                               person=person,
+                               person=current_person,
                                person_titles=person_titles,
                                person_actions=person_actions,
                                person_times=person_times,
                                person_places=person_places,
+                               connect_data=connect_data,
                                connections=connections,
                                backward_connections=backward_connections)
     else:
