@@ -72,7 +72,7 @@
             {% endfor %}
         {% endif %}
     </table>
-        {% if connections or backward_connections %}
+        {% if connect_data %}
             <hr>
             <h4>{{ _('Connections') }}</h4>
             <tr class="warning">
@@ -91,11 +91,8 @@
                             {% set item=connect_data[person_key][actions_key] %}
                             <tr>
                                 <td>
-                                    {% if item['actions'] %}
-                                    {% for action in item['actions'] %}
-                                    <a href="{{ url_for('action', id=action.id) }}" title="{{ action.name }}">{{ action.name }}</a>
-                                    {% if not loop.last %}, {% endif %}
-                                    {% endfor %}
+                                    {% if item['action'] %}
+                                    <a href="{{ url_for('action', id=item['action'].id) }}" title="{{ item['action'].name }}">{{ item['action'].name }}</a>
                                     {% endif %}
                                 </td>
                                 <td nowrap><a href="{{ url_for('person', id=item['person'].id) }}" title="{{ item['person'].name }}">{{ item['person'].name }}</a></td>

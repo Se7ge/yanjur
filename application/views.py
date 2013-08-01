@@ -311,13 +311,11 @@ def person(id):
             connect_data[item.person.id] = dict()
         action_ids = list()
         for action in item.actions:
-            action_ids.append(str(action.id))
-        actions_key = '_'.join(action_ids)
-        if actions_key not in connect_data[item.person.id]:
-            connect_data[item.person.id]['_'.join(action_ids)] = dict(person=item.person,
-                                                                      actions=item.actions,
-                                                                      works=list())
-        connect_data[item.person.id]['_'.join(action_ids)]['works'].append(item.work_person.work)
+            if action.id not in connect_data[item.person.id]:
+                connect_data[item.person.id][action.id] = dict(person=item.person,
+                                                               action=action,
+                                                               works=list())
+            connect_data[item.person.id][action.id]['works'].append(item.work_person.work)
     for item in backward_connections:
         person = item.work_person.person
         if person.id not in connect_data:
@@ -325,12 +323,11 @@ def person(id):
         action_ids = list()
         for action in item.actions:
             action_ids.append(str(action.id))
-        actions_key = '_'.join(action_ids)
-        if actions_key not in connect_data[person.id]:
-            connect_data[person.id]['_'.join(action_ids)] = dict(person=person,
-                                                                 actions=item.actions,
-                                                                 works=list())
-        connect_data[person.id]['_'.join(action_ids)]['works'].append(item.work_person.work)
+            if action.id not in connect_data[person.id]:
+                connect_data[person.id][action.id] = dict(person=person,
+                                                          action=action,
+                                                          works=list())
+            connect_data[person.id][action.id]['works'].append(item.work_person.work)
 
     if current_person:
         return render_template('persons/entity.html',
@@ -341,9 +338,7 @@ def person(id):
                                person_actions=person_actions,
                                person_times=person_times,
                                person_places=person_places,
-                               connect_data=connect_data,
-                               connections=connections,
-                               backward_connections=backward_connections)
+                               connect_data=connect_data)
     else:
         abort(404)
 
