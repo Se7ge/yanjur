@@ -93,7 +93,9 @@ class Person_Alias(Base):
     id = Column(Integer, primary_key=True)
     person_id = Column(Integer, ForeignKey(Person.id), doc='Link to person')
     name = Column(Unicode(255), nullable=False)
-    person = relationship(Person, backref='aliases')
+    person = relationship(Person, backref=backref('aliases', order_by=name))
+
+    __mapper_args__ = {'order_by': name}
 
 
 class Title_Alias(Base):
@@ -106,6 +108,8 @@ class Title_Alias(Base):
     name = Column(Unicode(255, collation='utf8_bin'), nullable=False)
     title = relationship(Title, backref='aliases')
 
+    __mapper_args__ = {'order_by': name}
+
 
 class Place_Alias(Base):
     """Mapping for Place_Alias table"""
@@ -117,6 +121,8 @@ class Place_Alias(Base):
     name = Column(Unicode(255), nullable=False)
     place = relationship(Place, backref='aliases')
 
+    __mapper_args__ = {'order_by': name}
+
 
 class Action_Alias(Base):
     """Mapping for Action_Alias table"""
@@ -126,7 +132,9 @@ class Action_Alias(Base):
     id = Column(Integer, primary_key=True)
     action_id = Column(Integer, ForeignKey(Action.id), doc='Link to Action')
     name = Column(Unicode(255), nullable=False)
-    action = relationship(Action, backref='aliases')
+    action = relationship(Action, backref=backref('aliases', order_by=name))
+
+    __mapper_args__ = {'order_by': name}
 
 
 class Connection_Type(Base):
