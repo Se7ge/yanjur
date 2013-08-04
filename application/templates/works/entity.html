@@ -30,7 +30,7 @@ $(document).ready(function(){
 });
 function _parse_link(link, text){
     var escaped_name = RegExp.escape(link.name);
-    var name = new RegExp(escaped_name, 'gi');
+    var name = new RegExp('[\\s\\-\\W]' + escaped_name + '(?!\\w)', 'gi');
     var res;
     while ((res = name.exec(text)) != null){
         if (res && name.lastIndex > -1){

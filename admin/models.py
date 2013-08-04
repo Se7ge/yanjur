@@ -3,6 +3,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Unicode, UnicodeText, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy import func, or_, desc
 
 Base = declarative_base()
 
@@ -132,7 +133,7 @@ class Action_Alias(Base):
     id = Column(Integer, primary_key=True)
     action_id = Column(Integer, ForeignKey(Action.id), doc='Link to Action')
     name = Column(Unicode(255), nullable=False)
-    action = relationship(Action, backref=backref('aliases', order_by=name))
+    action = relationship(Action, backref=backref('aliases', order_by=(desc(func.length(name)), name)))
 
     __mapper_args__ = {'order_by': name}
 
