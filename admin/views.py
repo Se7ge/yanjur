@@ -10,11 +10,14 @@ from werkzeug import secure_filename
 
 from admin.models import Action, Person, Person_Alias, Place, Work_Categories, Work_Person, Work, Title, Pages
 from admin.models import Title_Alias, Connection, Work_Time, Connection_Actions, Action_Alias, Place_Alias
+from admin.models import Work_Person_Titles, Connection_Titles
 from admin.ckedit import CKTextAreaField
 from settings import UPLOAD_FOLDER
 from parser import parse_sheet
 
 ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
+
+session = Session()
 
 
 class Work_Admin(ModelView):
@@ -132,6 +135,120 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
+def _delete_aliases(aliases):
+    for alias in aliases:
+        session.delete(alias)
+        session.commit()
+
+
+def __delete_actions(actions):
+    for action in actions:
+        _delete_aliases(action.aliases)
+        session.delete(action)
+        session.commit()
+
+
+def __delete_titles(titles):
+    for title in titles:
+        _delete_aliases(title.aliases)
+        session.delete(title)
+        session.commit()
+
+
+def __delete_person(person):
+    _delete_aliases(person.aliases)
+    session.delete(person)
+    session.commit()
+
+
+def __delete_time(time):
+    session.delete(time)
+    session.commit()
+
+
+def __delete_place(place):
+    _delete_aliases(place.aliases)
+    session.delete(place)
+    session.commit()
+
+
+def __delete_work(work):
+    session.delete(work)
+    session.commit()
+
+
+def __delete_connections(connections):
+    actions = list()
+    persons = list()
+    titles = list()
+    for connection in connections:
+        actions.append(connection.actions)
+        persons.append(connection.person)
+        titles.append(
+            session.query(Title).join(Connection_Titles).filter(
+                Connection_Titles.connection_id == connection.id
+            ).all())
+        session.delete(connection)
+        session.commit()
+    return actions, persons, titles
+
+
+def clear_works(category_id):
+    work_persons = session.query(Work_Person).filter(Work.category_id == category_id).all()
+    actions = list()
+    persons = list()
+    times = list()
+    titles = list()
+    places = list()
+    works = list()
+    for work_person in work_persons:
+        actions.append(work_person.actions)
+        persons.append(work_person.person)
+        times.append(work_person.times)
+        places.append(work_person.places)
+        works.append(work_person.work)
+        titles.append(
+            session.query(Title).join(Work_Person_Titles).filter(
+                Work_Person_Titles.work_person_id == work_person.id
+            ).all())
+
+        con_actions, con_persons, con_titles = __delete_connections(work_person.connections)
+        actions.extend(con_actions)
+        persons.extend(con_persons)
+        titles.extend(con_titles)
+
+        session.delete(work_person)
+        session.commit()
+
+    for action in actions:
+        if action:
+            __delete_actions(action)
+
+    for title in titles:
+        if title:
+            __delete_actions(title)
+
+    for person in persons:
+        if person:
+            __delete_person(person)
+
+    for time in times:
+        if time:
+            __delete_time(time)
+
+    for place in places:
+        if place:
+            __delete_place(place)
+
+    for work in works:
+        if work:
+            __delete_work(work)
+
+
+def clear_data(category_id):
+    clear_works(category_id)
+
+
 class UploadAdmin(BaseView):
     @expose('/', methods=['GET', 'POST'])
     def upload_file(self):
@@ -139,6 +256,9 @@ class UploadAdmin(BaseView):
         if request.method == 'POST':
             category = int(request.form['category'])
             if category:
+                if request.form['clear_old']:
+                    clear_data(category)
+
                 _file = request.files['file']
                 if _file and allowed_file(_file.filename):
                     filename = secure_filename(_file.filename)

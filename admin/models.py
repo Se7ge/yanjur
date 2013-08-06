@@ -94,7 +94,8 @@ class Person_Alias(Base):
     id = Column(Integer, primary_key=True)
     person_id = Column(Integer, ForeignKey(Person.id), doc='Link to person')
     name = Column(Unicode(255), nullable=False)
-    person = relationship(Person, backref=backref('aliases', order_by=name))
+    person = relationship(Person, backref=backref('aliases', order_by=name),
+                          cascade="all, delete, delete-orphan", single_parent=True)
 
     __mapper_args__ = {'order_by': name}
 
@@ -107,7 +108,7 @@ class Title_Alias(Base):
     id = Column(Integer, primary_key=True)
     title_id = Column(Integer, ForeignKey(Title.id), doc='Link to title')
     name = Column(Unicode(255, collation='utf8_bin'), nullable=False)
-    title = relationship(Title, backref='aliases')
+    title = relationship(Title, backref='aliases', cascade="all, delete, delete-orphan", single_parent=True)
 
     __mapper_args__ = {'order_by': name}
 
@@ -120,7 +121,7 @@ class Place_Alias(Base):
     id = Column(Integer, primary_key=True)
     place_id = Column(Integer, ForeignKey(Place.id), doc='Link to place')
     name = Column(Unicode(255), nullable=False)
-    place = relationship(Place, backref='aliases')
+    place = relationship(Place, backref='aliases', cascade="all, delete, delete-orphan", single_parent=True)
 
     __mapper_args__ = {'order_by': name}
 
@@ -133,7 +134,8 @@ class Action_Alias(Base):
     id = Column(Integer, primary_key=True)
     action_id = Column(Integer, ForeignKey(Action.id), doc='Link to Action')
     name = Column(Unicode(255), nullable=False)
-    action = relationship(Action, backref=backref('aliases', order_by=(desc(func.length(name)), name)))
+    action = relationship(Action, backref=backref('aliases', order_by=(desc(func.length(name)), name)),
+                          cascade="all, delete, delete-orphan", single_parent=True)
 
     __mapper_args__ = {'order_by': name}
 
@@ -180,8 +182,8 @@ class Work_Person_Titles(Base):
     __tablename__ = 'work_person_titles'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
-    work_person_id = Column(Integer, ForeignKey(Work_Person.id), primary_key=True)
-    title_id = Column(Integer, ForeignKey(Title.id), primary_key=True)
+    work_person_id = Column(Integer, ForeignKey(Work_Person.id, ondelete='CASCADE'), primary_key=True)
+    title_id = Column(Integer, ForeignKey(Title.id, ondelete='CASCADE'), primary_key=True)
 
 
 class Work_Person_Actions(Base):
@@ -189,8 +191,8 @@ class Work_Person_Actions(Base):
     __tablename__ = 'work_person_actions'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
-    work_person_id = Column(Integer, ForeignKey(Work_Person.id), primary_key=True)
-    action_id = Column(Integer, ForeignKey(Action.id), primary_key=True)
+    work_person_id = Column(Integer, ForeignKey(Work_Person.id, ondelete='CASCADE'), primary_key=True)
+    action_id = Column(Integer, ForeignKey(Action.id, ondelete='CASCADE'), primary_key=True)
 
 
 class Connection(Base):
@@ -201,7 +203,7 @@ class Connection(Base):
     id = Column(Integer, primary_key=True)
     work_person_id = Column(Integer, ForeignKey(Work_Person.id), nullable=False)
     person_id = Column(Integer, ForeignKey(Person.id), nullable=False)
-    work_person = relationship(Work_Person)
+    work_person = relationship(Work_Person, backref=backref('connections'))
     person = relationship(Person)
     actions = relationship(Action, secondary='connection_actions')
 
@@ -211,8 +213,8 @@ class Connection_Actions(Base):
     __tablename__ = 'connection_actions'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
-    connection_id = Column(Integer, ForeignKey(Connection.id), primary_key=True)
-    action_id = Column(Integer, ForeignKey(Action.id), primary_key=True)
+    connection_id = Column(Integer, ForeignKey(Connection.id, ondelete='CASCADE'), primary_key=True)
+    action_id = Column(Integer, ForeignKey(Action.id, ondelete='CASCADE'), primary_key=True)
 
 
 class Connection_Titles(Base):
@@ -220,8 +222,8 @@ class Connection_Titles(Base):
     __tablename__ = 'connection_titles'
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
-    connection_id = Column(Integer, ForeignKey(Connection.id), primary_key=True)
-    title_id = Column(Integer, ForeignKey(Title.id), primary_key=True)
+    connection_id = Column(Integer, ForeignKey(Connection.id, ondelete='CASCADE'), primary_key=True)
+    title_id = Column(Integer, ForeignKey(Title.id, ondelete='CASCADE'), primary_key=True)
 
 
 class Pages(Base):

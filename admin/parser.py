@@ -48,6 +48,7 @@ def _get_author(name):
 
 
 def _get_object(_class, column, value):
+    value = value.rstrip('-')
     obj = session.query(_class).filter_by(**{column: value.strip()}).first()
     if not obj and _class.__name__ in ALIAS_MODELS:
         alias_obj = session.query(ALIAS_MODELS.get(_class.__name__)).filter_by(**{column: value.strip()}).first()
@@ -56,6 +57,7 @@ def _get_object(_class, column, value):
 
 
 def _add_object(_class, column, value):
+    value = value.rstrip('-')
     obj = _class()
     setattr(obj, column, ' '.join(value.split()).strip())
     session.add(obj)
