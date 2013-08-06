@@ -200,13 +200,11 @@ def clear_works(category_id):
     times = list()
     titles = list()
     places = list()
-    works = list()
     for work_person in work_persons:
         actions.append(work_person.actions)
         persons.append(work_person.person)
         times.append(work_person.times)
         places.append(work_person.places)
-        works.append(work_person.work)
         titles.append(
             session.query(Title).join(Work_Person_Titles).filter(
                 Work_Person_Titles.work_person_id == work_person.id
@@ -240,9 +238,8 @@ def clear_works(category_id):
         if place:
             __delete_place(place)
 
-    for work in works:
-        if work:
-            __delete_work(work)
+    session.query(Work).filter(Work.category_id == category_id).delete()
+    session.commit()
 
 
 def clear_data(category_id):
