@@ -253,7 +253,7 @@ class UploadAdmin(BaseView):
         if request.method == 'POST':
             category = int(request.form['category'])
             if category:
-                if request.form['clear_old']:
+                if request.form.get('clear_old'):
                     clear_data(category)
 
                 _file = request.files['file']

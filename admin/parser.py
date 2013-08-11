@@ -86,6 +86,7 @@ def _add_work(category, data_row):
         for obj in objects.values():
             if not getattr(obj, 'id', None):
                 session.add(obj)
+                session.commit()
             object_id = obj.id
     session.commit()
     return object_id
@@ -271,7 +272,7 @@ def parse_sheet(category, file_name):
     if wb:
         for s in wb.sheets():
             if s.number == 0:
-                add_data(category, s)
+                works = s
             elif s.number == 1:
                 add_aliases(Person, Person_Alias, 'person_id', s)
             elif s.number == 2:
@@ -280,5 +281,6 @@ def parse_sheet(category, file_name):
                 add_aliases(Place, Place_Alias, 'place_id', s)
             elif s.number == 4:
                 add_aliases(Action, Action_Alias, 'action_id', s)
-
+        # parse works after aliases
+        add_data(category, works)
 # parse_sheet('index3.xlsx')
