@@ -19,7 +19,7 @@
 <script type="text/javascript">
 var links = {{ links|tojson|safe }};
 RegExp.escape = function(str) {
-    return (str+'').replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    return (str+'').replace(/[>-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 $(document).ready(function(){
     var content = $('#work_data').html();
