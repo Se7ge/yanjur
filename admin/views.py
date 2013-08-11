@@ -224,7 +224,7 @@ def clear_works(category_id):
 
     for title in titles:
         if title:
-            __delete_actions(title)
+            __delete_titles(title)
 
     for person in persons:
         if person:
