@@ -4,7 +4,7 @@
     <legend><h3>{{ data.number }}</h3></legend>
     <div id="work_data">
         <h4>{{ data.name }}</h4>
-        {% if data.colophon %}<p>{{ data.colophon|safe }}</p>{% endif %}
+        {% if data.colophon %}<p>{{ data.colophon }}</p>{% endif %}
         {% if data.location %}<p>{{ data.location }}</p>{% endif %}
     </div>
     {% if concordance %}{% endif %}

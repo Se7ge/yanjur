@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from flask import render_template, abort, request, url_for, json
+import jinja2
 from sqlalchemy import func, or_, desc
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
@@ -139,7 +140,7 @@ def _get_context_links(work_id):
                 for alias in person.aliases:
                     if alias.name and alias.name not in _exists:
                         _exists.append(alias.name)
-                        result.append(dict(name=alias.name, url=url_for('person', id=person.id)))
+                        result.append(dict(name=jinja2.escape(alias.name), url=url_for('person', id=person.id)))
                         # result.update({alias.name: url_for('person', id=person.id)})
 
     titles_query = (session.query(Title)
@@ -159,13 +160,13 @@ def _get_context_links(work_id):
             if title.name and title.name not in _exists:
                 _exists.append(title.name)
                 # result.update({title.name: url_for('title', id=title.id)})
-                result.append(dict(name=title.name, url=url_for('title', id=title.id)))
+                result.append(dict(name=jinja2.escape(title.name), url=url_for('title', id=title.id)))
             if title.aliases:
                 for alias in title.aliases:
                     if alias.name and alias.name not in _exists:
                         _exists.append(alias.name)
                         # result.update({alias.name: url_for('title', id=title.id)})
-                        result.append(dict(name=alias.name, url=url_for('title', id=title.id)))
+                        result.append(dict(name=jinja2.escape(alias.name), url=url_for('title', id=title.id)))
 
     actions_query = (session.query(Action)
                      .join(Work_Person_Actions)
@@ -183,13 +184,13 @@ def _get_context_links(work_id):
             if action.name and action.name not in _exists:
                 _exists.append(action.name)
                 # result.update({action.name: url_for('action', id=action.id)})
-                result.append(dict(name=action.name, url=url_for('action', id=action.id)))
+                result.append(dict(name=jinja2.escape(action.name), url=url_for('action', id=action.id)))
             if action.aliases:
                 for alias in action.aliases:
                     if alias.name and alias.name not in _exists:
                         _exists.append(alias.name)
                         # result.update({alias.name: url_for('action', id=action.id)})
-                        result.append(dict(name=alias.name, url=url_for('action', id=action.id)))
+                        result.append(dict(name=jinja2.escape(alias.name), url=url_for('action', id=action.id)))
 
     places = (session.query(Place)
               .join(Work_Person)
@@ -202,13 +203,13 @@ def _get_context_links(work_id):
             if place.name and place.name not in _exists:
                 _exists.append(place.name)
                 # result.update({place.name: url_for('place', id=place.id)})
-                result.append(dict(name=place.name, url=url_for('place', id=place.id)))
+                result.append(dict(name=jinja2.escape(place.name), url=url_for('place', id=place.id)))
             if place.aliases:
                 for alias in place.aliases:
                     if alias.name and alias.name not in _exists:
                         _exists.append(alias.name)
                         # result.update({alias.name: url_for('place', id=place.id)})
-                        result.append(dict(name=alias.name, url=url_for('place', id=place.id)))
+                        result.append(dict(name=jinja2.escape(alias.name), url=url_for('place', id=place.id)))
 
     times = (session.query(Work_Time)
              .join(Work_Person)
@@ -221,7 +222,7 @@ def _get_context_links(work_id):
             if time.name and time.name not in _exists:
                 _exists.append(time.name)
                 # result.update({time.name: url_for('time', id=time.id)})
-                result.append(dict(name=time.name, url=url_for('time', id=time.id)))
+                result.append(dict(name=jinja2.escape(time.name), url=url_for('time', id=time.id)))
 
     return result
 
