@@ -5,6 +5,7 @@ from sqlalchemy import func, or_, desc
 from application.app import app
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
 from admin.models import Work_Person_Actions, Connection, Connection_Titles, Connection_Actions, Title_Alias
+from admin.models import Person_Alias, Action_Alias, Place_Alias
 from admin.database import Session
 from application.context_processors import sidebar_menu
 from settings import SEARCHD_CONNECTION
@@ -119,7 +120,7 @@ def work(id):
         abort(404)
 
 
-def _get_context_links(work_id):
+def _get_context_links_only_by_work(work_id):
     result = list()
 
     persons_query = session.query(Person).join(Work_Person).filter(Work_Person.work_id == work_id)
@@ -222,6 +223,85 @@ def _get_context_links(work_id):
             if time.name and time.name not in _exists:
                 _exists.append(time.name)
                 # result.update({time.name: url_for('time', id=time.id)})
+                result.append(dict(name=jinja2.escape(time.name), url=url_for('time', id=time.id)))
+
+    return result
+
+
+def _get_context_links(work_id):
+    result = list()
+
+    persons = session.query(Person).order_by(desc(func.length(Person.name))).all()
+    if persons:
+        _exists = []
+        for person in persons:
+            if person.name and person.name not in _exists:
+                _exists.append(person.name)
+                result.append(dict(name=jinja2.escape(person.name), url=url_for('person', id=person.id)))
+                # result.update({person.name: url_for('person', id=person.id)})
+
+    person_aliases = session.query(Person_Alias).order_by(desc(func.length(Person_Alias.name))).all()
+    if person_aliases:
+        for person_alias in person_aliases:
+            if person_alias.name and person_alias.name not in _exists:
+                _exists.append(person_alias.name)
+                result.append(
+                    dict(name=jinja2.escape(person_alias.name), url=url_for('person', id=person_alias.person_id)))
+
+    titles = session.query(Title).order_by(desc(func.length(Title.name))).all()
+    if titles:
+        _exists = []
+        for title in titles:
+            if title.name and title.name not in _exists:
+                _exists.append(title.name)
+                # result.update({title.name: url_for('title', id=title.id)})
+                result.append(dict(name=jinja2.escape(title.name), url=url_for('title', id=title.id)))
+
+    title_aliases = session.query(Title_Alias).order_by(desc(func.length(Title_Alias.name))).all()
+    if title_aliases:
+        for title_alias in title_aliases:
+            if title_alias.name and title_alias.name not in _exists:
+                _exists.append(title_alias.name)
+                result.append(dict(name=jinja2.escape(title_alias.name), url=url_for('title', id=title_alias.title_id)))
+
+    actions = session.query(Action).order_by(desc(func.length(Action.name))).all()
+    if actions:
+        _exists = []
+        for action in actions:
+            if action.name and action.name not in _exists:
+                _exists.append(action.name)
+                # result.update({action.name: url_for('action', id=action.id)})
+                result.append(dict(name=jinja2.escape(action.name), url=url_for('action', id=action.id)))
+
+    action_aliases = session.query(Action_Alias).order_by(desc(func.length(Action_Alias.name))).all()
+    if action_aliases:
+        for action_alias in action_aliases:
+            if action_alias.name and action_alias.name not in _exists:
+                _exists.append(action_alias.name)
+                result.append(
+                    dict(name=jinja2.escape(action_alias.name), url=url_for('action', id=action_alias.action_id)))
+
+    places = session.query(Place).order_by(desc(func.length(Place.name))).all()
+    if places:
+        _exists = []
+        for place in places:
+            if place.name and place.name not in _exists:
+                _exists.append(place.name)
+                result.append(dict(name=jinja2.escape(place.name), url=url_for('place', id=place.id)))
+
+    place_aliases = session.query(Place_Alias).order_by(desc(func.length(Place_Alias.name))).all()
+    if place_aliases:
+        for place_alias in place_aliases:
+            if place_alias.name and place_alias.name not in _exists:
+                _exists.append(place_alias.name)
+                result.append(dict(name=jinja2.escape(place_alias.name), url=url_for('place', id=place_alias.place_id)))
+
+    times = session.query(Work_Time).order_by(desc(func.length(Work_Time.name))).all()
+    if times:
+        _exists = []
+        for time in times:
+            if time.name and time.name not in _exists:
+                _exists.append(time.name)
                 result.append(dict(name=jinja2.escape(time.name), url=url_for('time', id=time.id)))
 
     return result
