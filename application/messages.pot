@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-07-07 23:19+0400\n"
+"POT-Creation-Date: 2013-12-08 18:41+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -121,11 +121,15 @@ msgstr ""
 msgid "Title or Opening Lines"
 msgstr ""
 
-#: templates/search/result.html:23 templates/works/entity_list.html:10
+#: templates/search/result.html:23
 msgid "Toponym"
 msgstr ""
 
 #: templates/search/result.html:24 templates/works/entity_list.html:11
 msgid "Concordance"
+msgstr ""
+
+#: templates/works/entity_list.html:10
+msgid "Place"
 msgstr ""
 

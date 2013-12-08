@@ -34,5 +34,9 @@ CKEDITOR.editorConfig = function( config ) {
 	config.format_tags = 'p;h1;h2;h3;pre';
 
 	// Make dialogs simpler.
-	config.removeDialogTabs = 'image:advanced';
+	config.removeDialogTabs = 'image:advanced;link:advanced';
+
+    //Upload images
+    config.filebrowserUploadUrl = '/admin/ck_upload/';
+    config.filebrowserBrowseUrl = '/admin/ck_browse/';
 };

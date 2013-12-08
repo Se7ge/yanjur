@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-07-07 23:19+0400\n"
+"POT-Creation-Date: 2013-12-08 18:41+0400\n"
 "PO-Revision-Date: 2013-06-16 18:40+0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -47,7 +47,7 @@ msgstr "Действия"
 #: templates/_sidebar.html:19 templates/persons/entity.html:59
 #: templates/places/entity.html:2 templates/places/entity_list.html:3
 msgid "Toponyms"
-msgstr "Места"
+msgstr "Топонимы"
 
 #: templates/_sidebar.html:22 templates/persons/entity.html:42
 #: templates/times/entity.html:2 templates/times/entity_list.html:3
@@ -122,11 +122,15 @@ msgstr "Результаты поиска"
 msgid "Title or Opening Lines"
 msgstr "Название"
 
-#: templates/search/result.html:23 templates/works/entity_list.html:10
+#: templates/search/result.html:23
 msgid "Toponym"
-msgstr "Место"
+msgstr "Топоним"
 
 #: templates/search/result.html:24 templates/works/entity_list.html:11
 msgid "Concordance"
 msgstr "Конкорданс"
+
+#: templates/works/entity_list.html:10
+msgid "Place"
+msgstr "Место"
 

@@ -5,6 +5,9 @@ DB_USER = 'root'
 DB_PASSWORD = ''
 DB_NAME = 'soap'
 UPLOAD_FOLDER = '/path/to/the/uploads'
+MEDIA_ROOT = '/path/to/the/media'
+CKEDITOR_UPLOAD_PATH = '/path/to/the/media'
+MEDIA_URL = '/media'
 
 SECRET_KEY = ''
 

@@ -39,6 +39,8 @@ admin.add_view(views.Work_CategoriesAdmin(Session, name=u'Сборники', cat
 admin.add_view(views.TitlesAdmin(Session, name=u'Титулы', category=u'Справочники'))
 admin.add_view(views.UploadAdmin(name=u'Загрузка данных'))
 
+from views_ck import ck_browse, ck_upload
+
 
 @app.teardown_request
 def shutdown_session(exception=None):
