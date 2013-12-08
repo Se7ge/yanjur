@@ -76,7 +76,7 @@ def login():
     # Validate form input
     if form.validate_on_submit():
         # Retrieve the user from the hypothetical datastore
-        user = db_session.query(Users).filter(Users.login == form.login.data.strip()).first()
+        user = db_session.query(Users).filter(Users.login == form.login.data.strip(), Users.active == True).first()
         if user:
             check_user = User(user.login)
             # Compare passwords (use password hashing production)
