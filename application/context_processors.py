@@ -3,6 +3,7 @@
 from application.app import app
 from admin.models import Person, Person_Alias, Action, Title, Work_Categories, Work, Place, Work_Time
 from admin.database import Session
+from datetime import datetime
 
 session = Session()
 
@@ -20,4 +21,5 @@ def sidebar_menu():
                 titles=titles,
                 actions=actions,
                 places=places,
-                times=times)
+                times=times,
+                copy_year=datetime.now().strftime('%Y'))
