@@ -2,6 +2,6 @@
 
 {% block tail %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
-    <script src="{{ url_for('static', filename='ckeditor/config.js') }}"></script>
+    <script src="{{ url_for('admin.static', filename='ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ url_for('admin.static', filename='ckeditor/config.js') }}"></script>
 {% endblock %}
