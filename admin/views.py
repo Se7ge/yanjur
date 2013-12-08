@@ -10,7 +10,7 @@ from werkzeug import secure_filename
 
 from admin.models import Action, Person, Person_Alias, Place, Work_Categories, Work_Person, Work, Title, Pages
 from admin.models import Title_Alias, Connection, Work_Time, Connection_Actions, Action_Alias, Place_Alias
-from admin.models import Work_Person_Titles, Connection_Titles
+from admin.models import Work_Person_Titles, Connection_Titles, Roles, Users
 from admin.ckedit import CKTextAreaField
 from settings import UPLOAD_FOLDER
 from parser import parse_sheet
@@ -267,3 +267,19 @@ class UploadAdmin(BaseView):
             else:
                 msg = u'Не выбран сборник, к которому относится файл'
         return self.render('upload.html', categories=Session().query(Work_Categories).all(), msg=msg)
+
+
+class Roles_Admin(ModelView):
+    column_labels = dict(name=u'Имя', code=u'Код')
+    form_columns = ('code', 'name')
+
+    def __init__(self, session, **kwargs):
+        super(Roles_Admin, self).__init__(Roles, session, **kwargs)
+
+
+class Users_Admin(ModelView):
+    column_labels = dict(login=u'Логин', password=u'Пароль', active=u'Активен')
+    form_columns = ('login', 'password', 'active', 'roles')
+
+    def __init__(self, session, **kwargs):
+        super(Users_Admin, self).__init__(Users, session, **kwargs)

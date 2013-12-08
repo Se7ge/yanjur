@@ -1,14 +1,20 @@
 # -*- encoding: utf-8 -*-
-from flask import render_template, abort, request, url_for, json
+from flask import render_template, abort, request, url_for, json, current_app, redirect, session
 import jinja2
 from sqlalchemy import func, or_, desc
-from application.app import app
+from flask.ext.principal import Identity, AnonymousIdentity, identity_changed
+from application.app import app, login_manager
+from application.utils import public_endpoint
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
 from admin.models import Work_Person_Actions, Connection, Connection_Titles, Connection_Actions, Title_Alias
-from admin.models import Person_Alias, Action_Alias, Place_Alias
+from admin.models import Person_Alias, Action_Alias, Place_Alias, Users
 from admin.database import Session
 from application.context_processors import sidebar_menu
-from settings import SEARCHD_CONNECTION
+from application.forms import LoginForm
+from application.user import User
+from settings import SEARCHD_CONNECTION, AUTH_REQUIRED
+from flask.ext.login import login_user, logout_user, login_required, current_user
+from functools import wraps
 
 from sphinxit.core.nodes import Count, OR, RawAttr
 from sphinxit.core.processor import Search, Snippet
@@ -21,13 +27,94 @@ class SearchConfig(object):
     SEARCHD_CONNECTION = SEARCHD_CONNECTION
 
 
-session = Session()
+db_session = Session()
 ENTITIES = dict(works=Work, persons=Person, titles=Title, actions=Action, places=Place, times=Work_Time)
 
 
+login_manager.login_view = 'login'
+
+
+def exclude_endpoint(endpoint, exclude):
+    for item in exclude:
+        if item in endpoint:
+            return True
+    return False
+
+
+def my_login_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if AUTH_REQUIRED:
+            if current_app.login_manager._login_disabled:
+                return func(*args, **kwargs)
+            elif not current_user.is_authenticated():
+                return current_app.login_manager.unauthorized()
+            return func(*args, **kwargs)
+    return decorated_view
+
+
+@app.before_request
+def check_valid_login():
+    login_valid = current_user.is_authenticated()
+
+    exclude_list = ['static']
+
+    if (request.endpoint and
+            not exclude_endpoint(request.endpoint, exclude_list) and
+            not login_valid and
+            not getattr(app.view_functions[request.endpoint], 'is_public', False)):
+        return redirect(url_for('login', next=url_for(request.endpoint)))
+
+
+@app.route('/login/', methods=['GET', 'POST'])
+@public_endpoint
+def login():
+    # login form that uses Flask-WTF
+    form = LoginForm()
+    errors = list()
+
+    # Validate form input
+    if form.validate_on_submit():
+        # Retrieve the user from the hypothetical datastore
+        user = db_session.query(Users).filter(Users.login == form.login.data.strip()).first()
+        if user:
+            check_user = User(user.login)
+            # Compare passwords (use password hashing production)
+            if check_user.check_password(form.password.data.strip(), user.password):
+                # Keep the user info in the session using Flask-Login
+                login_user(user)
+
+                # Tell Flask-Principal the identity changed
+                identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
+
+                return redirect(request.args.get('next') or url_for('index'))
+            else:
+                errors.append(u'Access denied')
+        else:
+            errors.append(u'Access denied <b>%s</b>' % form.login.data.strip())
+
+    return render_template('user/login.html', form=form, errors=errors)
+
+
+@app.route('/logout/')
+def logout():
+    # Remove the user information from the session
+    logout_user()
+
+    # Remove session keys set by Flask-Principal
+    for key in ('identity.name', 'identity.auth_type'):
+        session.pop(key, None)
+
+    # Tell Flask-Principal the user is anonymous
+    identity_changed.send(current_app._get_current_object(), identity=AnonymousIdentity())
+
+    return redirect(request.args.get('next') or '/')
+
+
 @app.route('/')
+@my_login_required
 def index():
-    page = session.query(Pages).filter(Pages.url == 'index').first()
+    page = db_session.query(Pages).filter(Pages.url == 'index').first()
     if page:
         return render_template('index.html', article=page)
     else:
@@ -35,8 +122,9 @@ def index():
 
 
 @app.route('/page/<url>/')
+@my_login_required
 def show_article(url):
-    page = session.query(Pages).filter(Pages.url == url).first()
+    page = db_session.query(Pages).filter(Pages.url == url).first()
     if page:
         return render_template('article.html', article=page)
     else:
@@ -44,8 +132,9 @@ def show_article(url):
 
 
 @app.route('/places/')
+@my_login_required
 def places_list():
-    data = session.query(Place).join(Work_Person).join(Work).order_by(Place.name).all()
+    data = db_session.query(Place).join(Work_Person).join(Work).order_by(Place.name).all()
     for key, item in enumerate(data):
         exists_works = []
         works = []
@@ -58,8 +147,9 @@ def places_list():
 
 
 @app.route('/times/')
+@my_login_required
 def times_list():
-    data = session.query(Work_Time).join(Work_Person).join(Work).order_by(Work_Time.name).all()
+    data = db_session.query(Work_Time).join(Work_Person).join(Work).order_by(Work_Time.name).all()
     for item in data:
         exists_works = []
         works = []
@@ -72,6 +162,7 @@ def times_list():
 
 
 @app.route('/<name>/')
+@my_login_required
 def entity_list(name):
     order_by = 'name'
     if name == 'works':
@@ -79,11 +170,12 @@ def entity_list(name):
         SUBSTRING_INDEX(number, ' ', 1),
         LENGTH(SUBSTRING_INDEX(number, '(', 1)),
         SUBSTRING_INDEX(number, '(', 1)'''
-    data = session.query(ENTITIES[name]).order_by(order_by).all()
+    data = db_session.query(ENTITIES[name]).order_by(order_by).all()
     return render_template('%s/entity_list.html' % name, data=data)
 
 
 @app.route('/search/')
+@my_login_required
 def search():
     template = 'index.html'
     data = None
@@ -96,23 +188,24 @@ def search():
             for item in result['result']:
                 ids.append(item['id'])
             if ids:
-                data = session.query(Work).filter(Work.id.in_(ids)).all()
+                data = db_session.query(Work).filter(Work.id.in_(ids)).all()
 
         template = 'result.html'
     return render_template('search/%s' % template, data=data)
 
 
 @app.route('/work/<int:id>.html')
+@my_login_required
 def work(id):
-    title_aliases = session.query(Title_Alias).all()
-    work = session.query(Work).get(id)
+    title_aliases = db_session.query(Title_Alias).all()
+    work = db_session.query(Work).get(id)
     if work:
         context_links = _get_context_links(id)
 
         concordances = work.concordance.split(';')
         if not isinstance(concordances, list):
             concordances = list(concordances)
-        concordance_works = session.query(Work).filter(Work.number.in_(map(lambda x: x.strip(), concordances))).all()
+        concordance_works = db_session.query(Work).filter(Work.number.in_(map(lambda x: x.strip(), concordances))).all()
 
         return render_template('works/entity.html',
                                entity='work',
@@ -127,8 +220,8 @@ def work(id):
 def _get_context_links_only_by_work(work_id):
     result = list()
 
-    persons_query = session.query(Person).join(Work_Person).filter(Work_Person.work_id == work_id)
-    connection_persons = (session.query(Person)
+    persons_query = db_session.query(Person).join(Work_Person).filter(Work_Person.work_id == work_id)
+    connection_persons = (db_session.query(Person)
                           .join(Connection)
                           .join(Work_Person)
                           .filter(Work_Person.work_id == work_id))
@@ -148,12 +241,12 @@ def _get_context_links_only_by_work(work_id):
                         result.append(dict(name=jinja2.escape(alias.name), url=url_for('person', id=person.id)))
                         # result.update({alias.name: url_for('person', id=person.id)})
 
-    titles_query = (session.query(Title)
+    titles_query = (db_session.query(Title)
                     .join(Work_Person_Titles)
                     .join(Work_Person)
                     .filter(Work_Person.work_id == work_id))
 
-    connection_titles = (session.query(Title)
+    connection_titles = (db_session.query(Title)
                          .join(Connection_Titles)
                          .join(Connection)
                          .join(Work_Person)
@@ -173,11 +266,11 @@ def _get_context_links_only_by_work(work_id):
                         # result.update({alias.name: url_for('title', id=title.id)})
                         result.append(dict(name=jinja2.escape(alias.name), url=url_for('title', id=title.id)))
 
-    actions_query = (session.query(Action)
+    actions_query = (db_session.query(Action)
                      .join(Work_Person_Actions)
                      .join(Work_Person)
                      .filter(Work_Person.work_id == work_id))
-    connection_actions = (session.query(Action)
+    connection_actions = (db_session.query(Action)
                           .join(Connection_Actions)
                           .join(Connection)
                           .join(Work_Person)
@@ -197,7 +290,7 @@ def _get_context_links_only_by_work(work_id):
                         # result.update({alias.name: url_for('action', id=action.id)})
                         result.append(dict(name=jinja2.escape(alias.name), url=url_for('action', id=action.id)))
 
-    places = (session.query(Place)
+    places = (db_session.query(Place)
               .join(Work_Person)
               .filter(Work_Person.work_id == work_id)
               .order_by(desc(func.length(Place.name)))
@@ -216,7 +309,7 @@ def _get_context_links_only_by_work(work_id):
                         # result.update({alias.name: url_for('place', id=place.id)})
                         result.append(dict(name=jinja2.escape(alias.name), url=url_for('place', id=place.id)))
 
-    times = (session.query(Work_Time)
+    times = (db_session.query(Work_Time)
              .join(Work_Person)
              .filter(Work_Person.work_id == work_id)
              .order_by(desc(func.length(Work_Time.name)))
@@ -235,7 +328,7 @@ def _get_context_links_only_by_work(work_id):
 def _get_context_links(work_id):
     result = list()
 
-    persons = session.query(Person).order_by(desc(func.length(Person.name))).all()
+    persons = db_session.query(Person).order_by(desc(func.length(Person.name))).all()
     if persons:
         _exists = []
         for person in persons:
@@ -244,7 +337,7 @@ def _get_context_links(work_id):
                 result.append(dict(name=jinja2.escape(person.name), url=url_for('person', id=person.id)))
                 # result.update({person.name: url_for('person', id=person.id)})
 
-    person_aliases = session.query(Person_Alias).order_by(desc(func.length(Person_Alias.name))).all()
+    person_aliases = db_session.query(Person_Alias).order_by(desc(func.length(Person_Alias.name))).all()
     if person_aliases:
         for person_alias in person_aliases:
             if person_alias.name and person_alias.name not in _exists:
@@ -252,7 +345,7 @@ def _get_context_links(work_id):
                 result.append(
                     dict(name=jinja2.escape(person_alias.name), url=url_for('person', id=person_alias.person_id)))
 
-    titles = session.query(Title).order_by(desc(func.length(Title.name))).all()
+    titles = db_session.query(Title).order_by(desc(func.length(Title.name))).all()
     if titles:
         _exists = []
         for title in titles:
@@ -261,14 +354,14 @@ def _get_context_links(work_id):
                 # result.update({title.name: url_for('title', id=title.id)})
                 result.append(dict(name=jinja2.escape(title.name), url=url_for('title', id=title.id)))
 
-    title_aliases = session.query(Title_Alias).order_by(desc(func.length(Title_Alias.name))).all()
+    title_aliases = db_session.query(Title_Alias).order_by(desc(func.length(Title_Alias.name))).all()
     if title_aliases:
         for title_alias in title_aliases:
             if title_alias.name and title_alias.name not in _exists:
                 _exists.append(title_alias.name)
                 result.append(dict(name=jinja2.escape(title_alias.name), url=url_for('title', id=title_alias.title_id)))
 
-    actions = session.query(Action).order_by(desc(func.length(Action.name))).all()
+    actions = db_session.query(Action).order_by(desc(func.length(Action.name))).all()
     if actions:
         _exists = []
         for action in actions:
@@ -277,7 +370,7 @@ def _get_context_links(work_id):
                 # result.update({action.name: url_for('action', id=action.id)})
                 result.append(dict(name=jinja2.escape(action.name), url=url_for('action', id=action.id)))
 
-    action_aliases = session.query(Action_Alias).order_by(desc(func.length(Action_Alias.name))).all()
+    action_aliases = db_session.query(Action_Alias).order_by(desc(func.length(Action_Alias.name))).all()
     if action_aliases:
         for action_alias in action_aliases:
             if action_alias.name and action_alias.name not in _exists:
@@ -285,7 +378,7 @@ def _get_context_links(work_id):
                 result.append(
                     dict(name=jinja2.escape(action_alias.name), url=url_for('action', id=action_alias.action_id)))
 
-    places = session.query(Place).order_by(desc(func.length(Place.name))).all()
+    places = db_session.query(Place).order_by(desc(func.length(Place.name))).all()
     if places:
         _exists = []
         for place in places:
@@ -293,14 +386,14 @@ def _get_context_links(work_id):
                 _exists.append(place.name)
                 result.append(dict(name=jinja2.escape(place.name), url=url_for('place', id=place.id)))
 
-    place_aliases = session.query(Place_Alias).order_by(desc(func.length(Place_Alias.name))).all()
+    place_aliases = db_session.query(Place_Alias).order_by(desc(func.length(Place_Alias.name))).all()
     if place_aliases:
         for place_alias in place_aliases:
             if place_alias.name and place_alias.name not in _exists:
                 _exists.append(place_alias.name)
                 result.append(dict(name=jinja2.escape(place_alias.name), url=url_for('place', id=place_alias.place_id)))
 
-    times = session.query(Work_Time).order_by(desc(func.length(Work_Time.name))).all()
+    times = db_session.query(Work_Time).order_by(desc(func.length(Work_Time.name))).all()
     if times:
         _exists = []
         for time in times:
@@ -312,28 +405,29 @@ def _get_context_links(work_id):
 
 
 @app.route('/person/<int:id>.html')
+@my_login_required
 def person(id):
-    current_person = session.query(Person).get(id)
+    current_person = db_session.query(Person).get(id)
 
     person_titles = list()
-    query = (session.query(Title)
+    query = (db_session.query(Title)
              .join(Work_Person_Titles)
              .join(Work_Person)
              .filter(Work_Person.person_id == id))
-    connection_query = (session.query(Title)
+    connection_query = (db_session.query(Title)
                         .join(Connection_Titles)
                         .join(Connection)
                         .filter(Connection.person_id == id))
     for title in query.union(connection_query).group_by(Title.id).order_by(Title.name).all():
-        work_query = (session.query(Work_Person)
+        work_query = (db_session.query(Work_Person)
                       .join(Work_Person_Titles)
                       .join(Work)
                       .filter(Work_Person_Titles.title_id == title.id, Work_Person.person_id == id))
-        connection_work_query = (session.query(Work_Person)
+        connection_work_query = (db_session.query(Work_Person)
                                  .join(Connection)
                                  .join(Connection_Titles)
                                  .filter(Connection_Titles.title_id == title.id, Connection.person_id == id))
-        # works = (session.query(Work_Person)
+        # works = (db_session.query(Work_Person)
         #          .join(Work_Person_Titles)
         #          .join(Work)
         #          .filter(Work_Person_Titles.title_id == title.id, Work_Person.person_id == id)
@@ -343,13 +437,13 @@ def person(id):
         person_titles.append(dict(title=title, works=works))
 
     person_actions = list()
-    query = (session.query(Action)
+    query = (db_session.query(Action)
              .join(Work_Person_Actions)
              .join(Work_Person)
              .filter(Work_Person.person_id == id)
              .order_by(Action.name))
     for action in query.all():
-        works = (session.query(Work_Person)
+        works = (db_session.query(Work_Person)
                  .join(Work_Person_Actions)
                  .join(Work)
                  .filter(Work_Person_Actions.action_id == action.id, Work_Person.person_id == id)
@@ -358,12 +452,12 @@ def person(id):
         person_actions.append(dict(action=action, works=works))
 
     person_times = list()
-    query = (session.query(Work_Time)
+    query = (db_session.query(Work_Time)
              .join(Work_Person)
              .filter(Work_Person.person_id == id)
              .order_by(Work_Time.name))
     for time in query.all():
-        works = (session.query(Work_Person)
+        works = (db_session.query(Work_Person)
                  .join(Work)
                  .filter(Work_Person.time_id == time.id, Work_Person.person_id == id)
                  .order_by(Work.number)
@@ -371,24 +465,24 @@ def person(id):
         person_times.append(dict(time=time, works=works))
 
     person_places = list()
-    query = (session.query(Place)
+    query = (db_session.query(Place)
              .join(Work_Person)
              .filter(Work_Person.person_id == id)
              .order_by(Place.name))
     for place in query.all():
-        works = (session.query(Work_Person)
+        works = (db_session.query(Work_Person)
                  .join(Work)
                  .filter(Work_Person.place_id == place.id, Work_Person.person_id == id)
                  .order_by(Work.number)
                  .all())
         person_places.append(dict(place=place, works=works))
 
-    connections = (session.query(Connection)
+    connections = (db_session.query(Connection)
                    .join(Work_Person)
                    .filter(Work_Person.person_id == id)
                    .all())
 
-    backward_connections = (session.query(Connection).filter(Connection.person_id == id).all())
+    backward_connections = (db_session.query(Connection).filter(Connection.person_id == id).all())
 
     connect_data = dict()
     for item in connections:
@@ -429,22 +523,23 @@ def person(id):
 
 
 @app.route('/title/<int:id>.html')
+@my_login_required
 def title(id):
-    title = session.query(Title).get(id)
+    title = db_session.query(Title).get(id)
     person_titles = list()
-    query = (session.query(Person)
+    query = (db_session.query(Person)
              .join(Work_Person)
              .join(Work_Person_Titles)
              .filter(Work_Person_Titles.title_id == id))
-    connection_query = (session.query(Person)
+    connection_query = (db_session.query(Person)
                         .join(Connection)
                         .join(Connection_Titles)
                         .filter(Connection_Titles.title_id == id))
     for person in query.union(connection_query).group_by(Person.id).order_by(Person.name).all():
-        work_query = (session.query(Work_Person)
+        work_query = (db_session.query(Work_Person)
                       .join(Work_Person_Titles)
                       .filter(Work_Person_Titles.title_id == id, Work_Person.person_id == person.id))
-        work_connection_query = (session.query(Work_Person)
+        work_connection_query = (db_session.query(Work_Person)
                                  .join(Connection)
                                  .join(Connection_Titles)
                                  .filter(Connection_Titles.title_id == id, Connection.person_id == person.id))
@@ -462,18 +557,19 @@ def title(id):
 
 
 @app.route('/action/<int:id>.html')
+@my_login_required
 def action(id):
-    action = session.query(Action).get(id)
+    action = db_session.query(Action).get(id)
     person_actions = list()
-    query = (session.query(Person)
+    query = (db_session.query(Person)
              .join(Work_Person)
              .join(Work_Person_Actions)
              .filter(Work_Person_Actions.action_id == id))
-    connection_query = (session.query(Person)
+    connection_query = (db_session.query(Person)
                         .join(Connection)
                         .join(Connection_Actions)
                         .filter(Connection_Actions.action_id == id))
-    backward_connection_query = (session.query(Person)
+    backward_connection_query = (db_session.query(Person)
                                  .join(Work_Person)
                                  .join(Connection)
                                  .join(Connection_Actions)
@@ -483,10 +579,10 @@ def action(id):
                .order_by(Person.name)
                .all())
     for person in persons:
-        work_query = (session.query(Work_Person)
+        work_query = (db_session.query(Work_Person)
                       .join(Work_Person_Actions)
                       .filter(Work_Person_Actions.action_id == id, Work_Person.person_id == person.id))
-        work_connection_query = (session.query(Work_Person)
+        work_connection_query = (db_session.query(Work_Person)
                                  .join(Connection)
                                  .join(Connection_Actions)
                                  .filter(Connection_Actions.action_id == id,
@@ -505,15 +601,16 @@ def action(id):
 
 
 @app.route('/place/<int:id>.html')
+@my_login_required
 def place(id):
-    place = session.query(Place).get(id)
+    place = db_session.query(Place).get(id)
     person_places = list()
-    query = (session.query(Person)
+    query = (db_session.query(Person)
              .join(Work_Person)
              .filter(Work_Person.place_id == id)
              .order_by(Person.name))
     for person in query.all():
-        works = (session.query(Work_Person)
+        works = (db_session.query(Work_Person)
                  .join(Work)
                  .filter(Work_Person.place_id == id, Work_Person.person_id == person.id)
                  .order_by(Work.number)
@@ -530,15 +627,16 @@ def place(id):
 
 
 @app.route('/time/<int:id>.html')
+@my_login_required
 def time(id):
-    time = session.query(Work_Time).get(id)
+    time = db_session.query(Work_Time).get(id)
     person_times = list()
-    query = (session.query(Person)
+    query = (db_session.query(Person)
              .join(Work_Person)
              .filter(Work_Person.time_id == id)
              .order_by(Person.name))
     for person in query.all():
-        works = (session.query(Work_Person)
+        works = (db_session.query(Work_Person)
                  .join(Work)
                  .filter(Work_Person.time_id == id, Work_Person.person_id == person.id)
                  .order_by(Work.number)
@@ -557,3 +655,11 @@ def time(id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+
+#########################################
+
+@login_manager.user_loader
+def load_user(user_id):
+    # Return an instance of the User model
+    return db_session.query(Users).get(user_id)

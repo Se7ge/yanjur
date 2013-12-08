@@ -9,6 +9,8 @@ MEDIA_ROOT = '/path/to/the/media'
 CKEDITOR_UPLOAD_PATH = '/path/to/the/media'
 MEDIA_URL = '/media'
 
+AUTH_REQUIRED = True
+
 SECRET_KEY = ''
 
 SEARCHD_CONNECTION = {

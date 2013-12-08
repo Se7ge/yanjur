@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Unicode, UnicodeText, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import func, or_, desc
+from flask_login import UserMixin
 
 Base = declarative_base()
 
@@ -237,3 +238,27 @@ class Pages(Base):
     text = Column(UnicodeText)
     text_en = Column(UnicodeText)
     url = Column(Unicode(50), nullable=False)
+
+
+class Roles(Base):
+    __tablename__ = 'roles'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String(20), unique=True)
+    name = Column(Unicode(80), unique=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class Users(Base, UserMixin):
+    __tablename__ = 'users'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    login = Column(String(255), unique=True)
+    password = Column(String(255))
+    active = Column(Boolean, default=True)
+    role_id = Column(Integer, ForeignKey(Roles.id))
+    roles = relationship(Roles,  backref=backref('users', lazy='dynamic'))

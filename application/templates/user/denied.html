@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %} > Доступ запрещён{% endblock %}
+
+{% block content %}
+<legend>Доступ запрещён</legend>
+{%- with messages = get_flashed_messages() -%}
+  {%- if messages -%}
+    <div class="alert alert-error">
+    {%- for message in messages -%}
+      <div>{{ message }}</div>
+    {%- endfor -%}
+    </div>
+  {%- endif -%}
+{%- endwith -%}
+{% endblock %}

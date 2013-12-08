@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, g, request, session
 from flask.ext.babelex import Babel
+from flask.ext.principal import Principal
 import settings
 from admin.database import shutdown_session, Session
 
@@ -16,6 +17,11 @@ def get_locale():
     if override:
         session['lang'] = override
     return session.get('lang', request.accept_languages.best_match(['ru_RU', 'en_EN']))
+
+from utils import login_manager
+Principal(app)
+login_manager.init_app(app)
+
 
 from application.views import *
 

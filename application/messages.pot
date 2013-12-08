@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-12-08 18:41+0400\n"
+"POT-Creation-Date: 2013-12-08 21:39+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,7 +89,7 @@ msgstr ""
 msgid "Contacts"
 msgstr ""
 
-#: templates/base.html:4
+#: templates/base.html:4 templates/user/login.html:4
 msgid "Catalogue of the Golden Kanjur"
 msgstr ""
 
@@ -127,6 +127,14 @@ msgstr ""
 
 #: templates/search/result.html:24 templates/works/entity_list.html:11
 msgid "Concordance"
+msgstr ""
+
+#: templates/user/login.html:31
+msgid "Please sign in"
+msgstr ""
+
+#: templates/user/login.html:63
+msgid "Sign in"
 msgstr ""
 
 #: templates/works/entity_list.html:10

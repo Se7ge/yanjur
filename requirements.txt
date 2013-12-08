@@ -2,7 +2,8 @@ Flask
 Flask-WTF
 Flask-Admin
 Flask-BabelEx
-#Flask-Login
+Flask-Login
+Flask-Principal
 SQLAlchemy
 Flask-SQLAlchemy
 xlrd

@@ -38,6 +38,8 @@ admin.add_view(views.Work_CategoriesAdmin(Session, name=u'Сборники', cat
 # admin.add_view(views.Connection_ActionAdmin(Session, name=u'Типы сотрудничества', category=u'Справочники'))
 admin.add_view(views.TitlesAdmin(Session, name=u'Титулы', category=u'Справочники'))
 admin.add_view(views.UploadAdmin(name=u'Загрузка данных'))
+admin.add_view(views.Users_Admin(Session, name=u'Пользователи', category=u'Пользователи'))
+admin.add_view(views.Roles_Admin(Session, name=u'Роли', category=u'Пользователи'))
 
 from views_ck import ck_browse, ck_upload
 
