@@ -27,7 +27,11 @@ ENTITIES = dict(works=Work, persons=Person, titles=Title, actions=Action, places
 
 @app.route('/')
 def index():
-    return render_template('base.html')
+    page = session.query(Pages).filter(Pages.url == 'index').first()
+    if page:
+        return render_template('index.html', article=page)
+    else:
+        abort(404)
 
 
 @app.route('/page/<url>/')
