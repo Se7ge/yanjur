@@ -47,7 +47,7 @@ msgstr "Действия"
 #: templates/_sidebar.html:19 templates/persons/entity.html:59
 #: templates/places/entity.html:2 templates/places/entity_list.html:3
 msgid "Toponyms"
-msgstr "Топонимы"
+msgstr "Места"
 
 #: templates/_sidebar.html:22 templates/persons/entity.html:42
 #: templates/times/entity.html:2 templates/times/entity_list.html:3
@@ -124,9 +124,9 @@ msgstr "Название"
 
 #: templates/search/result.html:23 templates/works/entity_list.html:10
 msgid "Toponym"
-msgstr "Топоним"
+msgstr "Место"
 
 #: templates/search/result.html:24 templates/works/entity_list.html:11
 msgid "Concordance"
-msgstr "Concordance"
+msgstr "Конкорданс"
 
