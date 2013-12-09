@@ -10,6 +10,6 @@
     {% else %}
         {% set suffix='' %}
     {% endif %}
-    <legend><h3>{{ article|attr('title'+suffix) }}</h3></legend>
+    <!--<legend><h3>{{ article|attr('title'+suffix) }}</h3></legend>-->
     <p>{{ article|attr('text'+suffix)|safe }}</p>
 {% endblock %}
