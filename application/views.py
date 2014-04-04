@@ -4,7 +4,7 @@ import jinja2
 from sqlalchemy import func, or_, desc
 from flask.ext.principal import Identity, AnonymousIdentity, identity_changed
 from application.app import app, login_manager
-from application.utils import public_endpoint
+from application.utils import public_endpoint, make_search_synonyms
 from admin.models import Pages, Work, Work_Time, Action, Title, Place, Person, Work_Person, Work_Person_Titles
 from admin.models import Work_Person_Actions, Connection, Connection_Titles, Connection_Actions, Title_Alias
 from admin.models import Person_Alias, Action_Alias, Place_Alias, Users
@@ -181,7 +181,8 @@ def search():
     data = None
     if request.args.get('q'):
         search = Search(['works'], config=SearchConfig)
-        search = search.match(request.args.get('q')).limit(0, 1000)
+        query = make_search_synonyms(request.args.get('q'))
+        search = search.match(query).limit(0, 1000)
         result = search.ask()
         if result['result']:
             ids = list()
