@@ -34,29 +34,43 @@ admin_permission = permissions.get('admin')
 user_permission = permissions.get('user')
 
 
-SYNONYM_SYMBOLS = {'a': ['a\\\'', 'a"'],
-                   'e': ['e\\\'', 'e"'],
-                   'i': ['i\\\'', 'i"'],
-                   'u': ['o', 'o\\\'', 'o"', 'ö', 'u\\\'', 'u"', 'ü\\\''],
-                   'g': ['k\\\'', 'k"', 'k*', 'g\\\'', 'g"', 'g*', 'γ'],
+SYNONYM_SYMBOLS = {'a': ["a\\'", 'a\\\\"'],
+                   'e': ["e\\'", 'e\\\\"'],
+                   'i': ["i\\'", 'i\\\\"'],
+                   'u': ['o', "o\\'", 'o\\\\"', 'ö', "u\\'", 'u\\\\"', "ü\\'"],
+                   'g': ["k\\'", 'k\\\\"', 'k*', "g\\'", 'g\\\\"', 'g*', u'γ'],
                    'ng': ['n*'],
-                   'j': ['c\\\'', 'c"', 'c*', 'j\\\'', 'j"', 'j*', 'z', 'z\\\'', 'z"', 'z*'],
-                   'n': ['n\\\'', 'n"', 'n*'],
-                   'd': ['t', 't\\\'', 't', 't*', 'd\\\'', 'd"', 'd*', 'dh'],
-                   's': ['s\\\'', 's"', 's*', 'š'],
-                   'b': ['p', 'p\\\'', 'p"', 'p*', 'f', 'bh'],
-                   'm': ['m\\\''],
-                   'y': ['y\\\''],
-                   'q': ['q\\\'']}
+                   'j': ["c\\'", 'c\\\\"', 'c*', "j\\'", 'j\\\\"', 'j*', 'z', "z\\'", 'z\\\\"', 'z*'],
+                   'n': ["n\\'", 'n\\\\"', 'n*'],
+                   'd': ['t', "t\\'", 't', 't*', "d\\'", 'd\\\\"', 'd*', 'dh'],
+                   's': ["s\\'", 's\\\\"', 's*', 'š'],
+                   'b': ['p', "p\\'", 'p\\\\"', 'p*', 'f', 'bh'],
+                   'm': ["m\\'"],
+                   'y': ["y\\'"],
+                   'q': ["q\\'"]}
 
 
-def make_search_synonyms(query):
-    queries = list()
-    queries.append(query)
+def __query_synonyms(queries):
+    result = queries
+    query = queries[0]
+    key = None
     for k, v in SYNONYM_SYMBOLS.items():
+        #if key and key != k:
+        #    queries = list(result)
+        #for query in queries:
         if k in query:
             if k in ['g', 'n'] and 'ng' in query:
                 continue
             for char in v:
-                queries.append(query.replace(k, char))
-    return u" | ".join(queries)
+                if char not in query:
+                    result.append(query.replace(k, char))
+        key = k
+    return result
+
+
+def make_search_synonyms(query):
+    queries = list()
+    query = query.replace("'", "\\'").replace('"', '\\\\"')
+    queries.append(query)
+    queries.extend(__query_synonyms(queries))
+    return u'|'.join(queries)
