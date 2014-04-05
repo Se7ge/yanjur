@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from flask import g, current_app
 from flask.ext.principal import identity_loaded, Principal, Permission, RoleNeed, UserNeed
 from flask.ext.login import LoginManager, current_user
@@ -33,20 +34,20 @@ admin_permission = permissions.get('admin')
 user_permission = permissions.get('user')
 
 
-SYNONYM_SYMBOLS = {"a": ["a'", 'a"'],
-                   "e": ["e'", 'e"'],
-                   "i": ["i'", 'i"'],
-                   "u": ["o", "o'", 'o"', "ö", "u'", 'u"', "ü'"],
-                   "g": ["k'", 'k"', "k*", "g'", 'g"', "g*", "γ"],
-                   "ng": ["n*"],
-                   "j": ["c'", 'c"'', "c*", "j'", 'j"', "j*", "z", "z'", 'z"'', "z*"],
-                   "n": ["n'", 'n"', "n*"],
-                   "d": ["t", "t'", "t", "t*", "d'", 'd"', "d*", "dh"],
-                   "s": ["s'", 's"', "s*", "š"],
-                   "b": ["p", "p'", 'p"', "p*", "f", "bh"],
-                   "m": ["m'"],
-                   "y": ["y'"],
-                   "q": ["q'"]}
+SYNONYM_SYMBOLS = {'a': ['a\\\'', 'a"'],
+                   'e': ['e\\\'', 'e"'],
+                   'i': ['i\\\'', 'i"'],
+                   'u': ['o', 'o\\\'', 'o"', 'ö', 'u\\\'', 'u"', 'ü\\\''],
+                   'g': ['k\\\'', 'k"', 'k*', 'g\\\'', 'g"', 'g*', 'γ'],
+                   'ng': ['n*'],
+                   'j': ['c\\\'', 'c"', 'c*', 'j\\\'', 'j"', 'j*', 'z', 'z\\\'', 'z"', 'z*'],
+                   'n': ['n\\\'', 'n"', 'n*'],
+                   'd': ['t', 't\\\'', 't', 't*', 'd\\\'', 'd"', 'd*', 'dh'],
+                   's': ['s\\\'', 's"', 's*', 'š'],
+                   'b': ['p', 'p\\\'', 'p"', 'p*', 'f', 'bh'],
+                   'm': ['m\\\''],
+                   'y': ['y\\\''],
+                   'q': ['q\\\'']}
 
 
 def make_search_synonyms(query):
@@ -58,4 +59,4 @@ def make_search_synonyms(query):
                 continue
             for char in v:
                 queries.append(query.replace(k, char))
-    return u' | '.join(queries)
+    return u" | ".join(queries)

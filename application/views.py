@@ -182,7 +182,7 @@ def search():
     if request.args.get('q'):
         search = Search(['works'], config=SearchConfig)
         query = make_search_synonyms(request.args.get('q'))
-        search = search.match(query).limit(0, 1000)
+        search = search.match(unicode(query), raw=True).limit(0, 1000)
         result = search.ask()
         if result['result']:
             ids = list()
