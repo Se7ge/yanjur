@@ -37,13 +37,13 @@ user_permission = permissions.get('user')
 SYNONYM_SYMBOLS = {'a': ["a\\'", 'a\\\\"'],
                    'e': ["e\\'", 'e\\\\"'],
                    'i': ["i\\'", 'i\\\\"'],
-                   'u': ['o', "o\\'", 'o\\\\"', 'ö', "u\\'", 'u\\\\"', "ü\\'"],
+                   'u': ['o', "o\\'", 'o\\\\"', u'ö', "u\\'", 'u\\\\"', u"ü\\'"],
                    'g': ["k\\'", 'k\\\\"', 'k*', "g\\'", 'g\\\\"', 'g*', u'γ'],
                    'ng': ['n*'],
                    'j': ["c\\'", 'c\\\\"', 'c*', "j\\'", 'j\\\\"', 'j*', 'z', "z\\'", 'z\\\\"', 'z*'],
                    'n': ["n\\'", 'n\\\\"', 'n*'],
                    'd': ['t', "t\\'", 't', 't*', "d\\'", 'd\\\\"', 'd*', 'dh'],
-                   's': ["s\\'", 's\\\\"', 's*', 'š'],
+                   's': ["s\\'", 's\\\\"', 's*', u'š'],
                    'b': ['p', "p\\'", 'p\\\\"', 'p*', 'f', 'bh'],
                    'm': ["m\\'"],
                    'y': ["y\\'"],
@@ -73,4 +73,4 @@ def make_search_synonyms(query):
     query = query.replace("'", "\\'").replace('"', '\\\\"')
     queries.append(query)
     queries.extend(__query_synonyms(queries))
-    return u'|'.join(queries)
+    return queries

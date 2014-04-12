@@ -181,15 +181,16 @@ def search():
     data = None
     if request.args.get('q'):
         search = Search(['works'], config=SearchConfig)
-        query = make_search_synonyms(request.args.get('q'))
-        search = search.match(query, raw=True).limit(0, 1000)
-        result = search.ask()
-        if result['result']:
-            ids = list()
-            for item in result['result']:
-                ids.append(item['id'])
-            if ids:
-                data = db_session.query(Work).filter(Work.id.in_(ids)).all()
+        queries = make_search_synonyms(request.args.get('q'))
+        ids = set()
+        for query in queries:
+            search_query = search.match(query, raw=True).limit(0, 1000)
+            result = search_query.ask()
+            if result['result']:
+                for item in result['result']:
+                    ids.add(item['id'])
+        if ids:
+            data = db_session.query(Work).filter(Work.id.in_(ids)).all()
 
         template = 'result.html'
     return render_template('search/%s' % template, data=data)
