@@ -59,7 +59,7 @@ def _get_object(_class, column, value):
 def _add_object(_class, column, value):
     value = value.rstrip('-')
     obj = _class()
-    setattr(obj, column, ' '.join(value.split()).strip())
+    setattr(obj, column, u' '.join(unicode(value).split()).strip())
     session.add(obj)
     session.commit()
     return obj
@@ -69,7 +69,7 @@ def _add_work(category, data_row):
     objects = dict()
     object_id = None
     for i in range(len(WORK_COLUMNS)):
-        value = ' '.join(data_row[i].value.split()).strip()
+        value = u' '.join(unicode(data_row[i].value).split()).strip()
         if value:
             table_name = WORK_COLUMNS[i]['table'].__name__
             if i == 0 and table_name == Work.__name__:
@@ -93,7 +93,7 @@ def _add_work(category, data_row):
 
 
 def __process_field(table, field, value):
-    value = ' '.join(value.split())
+    value = u' '.join(unicode(value).split())
     value = value.strip()
     if not value:
         return None
@@ -125,7 +125,7 @@ def _add_author(work_id, data_row):
             if not AUTHOR_COLUMNS[k]['link_table'].__name__ in fields:
                 fields[AUTHOR_COLUMNS[k]['link_table'].__name__] = dict()
             if AUTHOR_COLUMNS[k]['multiple']:
-                values = data_row[i].value.split(';')
+                values = unicode(data_row[i].value).split(';')
                 if values:
                     fields[AUTHOR_COLUMNS[k]['link_table'].__name__][AUTHOR_COLUMNS[k]['link_column']] = list()
                     for value in values:
@@ -182,7 +182,7 @@ def __add_connection(work_person_id, connection):
             if not CONNECTION_COLUMNS[k]['link_table'].__name__ in fields:
                 fields[CONNECTION_COLUMNS[k]['link_table'].__name__] = dict()
             if CONNECTION_COLUMNS[k]['multiple']:
-                values = v.value.split(';')
+                values = unicode(v.value).split(';')
                 if values:
                     fields[CONNECTION_COLUMNS[k]['link_table'].__name__][CONNECTION_COLUMNS[k]['link_column']] = list()
                     for value in values:
@@ -252,7 +252,7 @@ def _add_alias(model, alias_model, fk_field, data_row):
             obj = __process_field(model, 'name', v.value)
             object_id = obj.id
         elif object_id and v.value:
-            values = v.value.split(';')
+            values = unicode(v.value).split(';')
             for value in values:
                 obj = __process_field(alias_model, 'name', value)
                 if obj:
