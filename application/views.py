@@ -342,7 +342,7 @@ def _get_context_links(work_id):
     person_aliases = db_session.query(Person_Alias).order_by(desc(func.length(Person_Alias.name))).all()
     if person_aliases:
         for person_alias in person_aliases:
-            if person_alias.name and person_alias.name not in _exists:
+            if person_alias.name and person_alias.person_id and person_alias.name not in _exists:
                 _exists.append(person_alias.name)
                 result.append(
                     dict(name=jinja2.escape(person_alias.name), url=url_for('person', id=person_alias.person_id)))

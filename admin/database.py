@@ -4,7 +4,7 @@ from models import Base
 
 from settings import DB_CONNECT_STRING
 
-engine = create_engine(DB_CONNECT_STRING, convert_unicode=True, encoding='utf8')
+engine = create_engine(DB_CONNECT_STRING, convert_unicode=True, encoding='utf8', pool_recycle=7200)
 Session = scoped_session(sessionmaker(bind=engine))
 Base.query = Session.query_property()
 
