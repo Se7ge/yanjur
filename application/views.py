@@ -59,11 +59,11 @@ def check_valid_login():
 
     exclude_list = ['static']
 
-    if (request.endpoint and
+    if (AUTH_REQUIRED and request.endpoint and
             not exclude_endpoint(request.endpoint, exclude_list) and
             not login_valid and
             not getattr(app.view_functions[request.endpoint], 'is_public', False)):
-        return redirect(url_for('login', next=url_for(request.endpoint)))
+        return redirect(url_for('login', next=request.url))
 
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -112,7 +112,6 @@ def logout():
 
 
 @app.route('/')
-@my_login_required
 def index():
     page = db_session.query(Pages).filter(Pages.url == 'index').first()
     if page:
@@ -122,7 +121,6 @@ def index():
 
 
 @app.route('/page/<url>/')
-@my_login_required
 def show_article(url):
     page = db_session.query(Pages).filter(Pages.url == url).first()
     if page:
@@ -132,7 +130,6 @@ def show_article(url):
 
 
 @app.route('/places/')
-@my_login_required
 def places_list():
     data = db_session.query(Place).join(Work_Person).join(Work).order_by(Place.name).all()
     for key, item in enumerate(data):
@@ -147,7 +144,6 @@ def places_list():
 
 
 @app.route('/times/')
-@my_login_required
 def times_list():
     data = db_session.query(Work_Time).join(Work_Person).join(Work).order_by(Work_Time.name).all()
     for item in data:
@@ -162,7 +158,6 @@ def times_list():
 
 
 @app.route('/<name>/')
-@my_login_required
 def entity_list(name):
     order_by = 'name'
     if name == 'works':
@@ -175,7 +170,6 @@ def entity_list(name):
 
 
 @app.route('/search/')
-@my_login_required
 def search():
     template = 'index.html'
     data = None
@@ -197,7 +191,6 @@ def search():
 
 
 @app.route('/work/<int:id>.html')
-@my_login_required
 def work(id):
     title_aliases = db_session.query(Title_Alias).all()
     work = db_session.query(Work).get(id)
@@ -407,7 +400,6 @@ def _get_context_links(work_id):
 
 
 @app.route('/person/<int:id>.html')
-@my_login_required
 def person(id):
     current_person = db_session.query(Person).get(id)
 
@@ -525,7 +517,6 @@ def person(id):
 
 
 @app.route('/title/<int:id>.html')
-@my_login_required
 def title(id):
     title = db_session.query(Title).get(id)
     person_titles = list()
@@ -559,7 +550,6 @@ def title(id):
 
 
 @app.route('/action/<int:id>.html')
-@my_login_required
 def action(id):
     action = db_session.query(Action).get(id)
     person_actions = list()
@@ -603,7 +593,6 @@ def action(id):
 
 
 @app.route('/place/<int:id>.html')
-@my_login_required
 def place(id):
     place = db_session.query(Place).get(id)
     person_places = list()
@@ -629,7 +618,6 @@ def place(id):
 
 
 @app.route('/time/<int:id>.html')
-@my_login_required
 def time(id):
     time = db_session.query(Work_Time).get(id)
     person_times = list()

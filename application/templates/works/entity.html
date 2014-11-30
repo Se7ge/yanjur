@@ -11,6 +11,34 @@
     <p>
     {% for item in concordance %}
         <a href="{{ url_for('work', id=item.id) }}" class="label label-inverse" title="{{ item.name }}">{{ item.number }}</a>
+        <a href="#modal_{{ item.id }}" role="button" class="btn btn-link" data-toggle="modal">сравнить</a><br>
+
+        <!-- Modal -->
+        <div id="modal_{{ item.id }}" class="modal hide fade" style="width: 80%; left: 10%; margin-left: 0" tabindex="-1" role="dialog" aria-labelledby="modal_{{ data.id }}Label" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 id="modal_{{ data.id }}Label">Сравнение сочинений</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row-fluid">
+                <div class="span6">
+                    <legend>{{ data.number }}</legend>
+                    <h5>{{ data.name }}</h5>
+                    {% if data.colophon %}<p>{{ data.colophon }}</p>{% endif %}
+                    {% if data.location %}<p>{{ data.location }}</p>{% endif %}
+                </div>
+                <div class="span6">
+                    <legend>{{ item.number }}</legend>
+                    <h5>{{ item.name }}</h5>
+                    {% if item.colophon %}<p>{{ item.colophon }}</p>{% endif %}
+                    {% if item.location %}<p>{{ item.location }}</p>{% endif %}
+                </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Закрыть</button>
+          </div>
+        </div>
     {% endfor %}
     </p>
     {% if data.concordance and not concordance %}<p>{{ data.concordance }}</p>{% endif %}
@@ -20,7 +48,7 @@
 var links = {{ links|tojson|safe }};
 RegExp.escape = function(str) {
     return (str+'').replace(/[>-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-}
+};
 $(document).ready(function(){
     var content = $('#work_data').html();
     for (var i in links){
